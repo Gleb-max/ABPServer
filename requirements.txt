@@ -9,6 +9,3 @@ flask-wtf
 flask-admin
 sqlalchemy-serializer
 
-libpq-dev
-redshift-sqlalchemy
-sqlparse
