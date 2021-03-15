@@ -4,6 +4,7 @@ from blueprints.constants import *
 # from data.db_session import create_session
 from flask import jsonify, Blueprint, make_response, request
 from utils import filling_all
+from data.db_session import db
 
 blueprint = Blueprint("clients_api", __name__, template_folder="templates")
 
@@ -40,16 +41,15 @@ def user_registration():
     if not re.match(pattern, email):
         return make_response(EMAIL_INCORRECT, 400)
 
-    session = create_session()
     user = User(
         name, surname, last_name,
         is_male, email, password
     )
 
     try:
-        session.add(user)
-        session.commit()
-        session.close()
+        db.session.add(user)
+        db.session.commit()
+        db.session.close()
     except Exception as e:
         print(f"Register user error: {e}")
         return make_response(INTERNAL_ERROR, 500)
@@ -65,16 +65,15 @@ def user_login():
     if not filling_all(email, password):
         return make_response(REQUIRED_FIELDS_NOT_FILLING, 400)
 
-    session = create_session()
-    user = session.query(User).filter(User.email == email).first()
+    user = db.session.query(User).filter(User.email == email).first()
     if user == None:
         return make_response(USER_NOT_FOUND, 401)
 
     if user.password == password:
-        session.close()
+        db.session.close()
         return make_response(RESULT_SUCCESS, 200)
     else:
-        session.close()
+        db.session.close()
         return make_response(FORM_INCORRECT, 401)
 
 

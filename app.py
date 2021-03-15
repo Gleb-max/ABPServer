@@ -314,11 +314,5 @@ if __name__ == "__main__":
     admin.add_view(ModelView(user.User, session))
     admin.add_view(ModelView(enrollee.Enrollee, session))
 
-    PORT = int(os.environ.get("PORT", 5000))
-    PRODUCTION_HOST = '0.0.0.0'
-    LOCAL_HOST = '127.0.0.1'
-    from data.DatabaseConfig import PRODUCTION
-
-    host = PRODUCTION_HOST if PRODUCTION else LOCAL_HOST
-    app.run(host=host, port=PORT)
+    app.run()
     session.close()
