@@ -305,7 +305,7 @@ app.register_blueprint(client.blueprint)
 
 
 if __name__ == "__main__":
-    admin = Admin(app, name='Admin-panel', template_mode='bootstrap3')
+    admin = Admin(app, name='Admin-panel', template_mode='bootstrap3', url='/admin')
 
     db.create_all()
     db.session.commit()
@@ -314,5 +314,11 @@ if __name__ == "__main__":
     admin.add_view(ModelView(user.User, session))
     admin.add_view(ModelView(enrollee.Enrollee, session))
 
-    app.run()
+    PORT = int(os.environ.get("PORT", 5000))
+    PRODUCTION_HOST = '0.0.0.0'
+    LOCAL_HOST = '127.0.0.1'
+    from data.DatabaseConfig import PRODUCTION
+
+    host = PRODUCTION_HOST if PRODUCTION else LOCAL_HOST
+    app.run(host=host, port=PORT)
     session.close()
