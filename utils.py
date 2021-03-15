@@ -1,10 +1,6 @@
 import datetime
 
 
-def parse_scan_result(result: str) -> dict:
-    return dict(map(lambda x: x.split("="), result.split("&")))
-
-
 def filling_all(*fields):
     return all(fields)
 

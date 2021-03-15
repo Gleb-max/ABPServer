@@ -1,10 +1,8 @@
 import sqlalchemy as sa
-from flask_login import UserMixin
-from sqlalchemy_serializer import SerializerMixin
-
 
 from sqlalchemy import orm
 from data.db_session import db
+
 
 class SchoolCertificate(db.Model):
     __tablename__ = "school_certificate"
@@ -17,4 +15,3 @@ class SchoolCertificate(db.Model):
 
     certificate_number = sa.Column(sa.Integer, nullable=True)
     certificate_scan = sa.Column(sa.String(300), nullable=True)
-
