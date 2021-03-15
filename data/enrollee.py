@@ -2,7 +2,6 @@ import sqlalchemy as sa
 from flask_login import UserMixin
 from sqlalchemy_serializer import SerializerMixin
 
-
 from sqlalchemy import orm
 from data.db_session import db
 
@@ -17,7 +16,7 @@ class Enrollee(db.Model):
     user = orm.relationship("User", back_populates="enrollee")
     passport = orm.relationship("Passport", uselist=False, back_populates="enrollee")
     school_certificate = orm.relationship("SchoolCertificate", uselist=False, back_populates="enrollee")
-    study_direction = orm.relationship("StudyDirection", uselist=False, back_populates="enrollee")
+    study_direction = orm.relationship("StudyDirection", uselist=True, back_populates="enrollee")
     # Individual achievement
     individual_achievement_id = sa.Column(sa.Integer, sa.ForeignKey('individual_achievement.id'))
     individual_achievement_list = orm.relationship("IndividualAchievement", back_populates="enrollee")
@@ -35,6 +34,19 @@ class Enrollee(db.Model):
     is_budgetary = sa.Column(sa.Boolean)
     original_or_copy = sa.Column(sa.Boolean, nullable=True)
     enrollment_consent = sa.Column(sa.String(length=500), nullable=True)
+
+    def __init__(self, birthday, phone, birth_place, need_hostel, photo, agreement_scan,
+                 is_budgetary, original_or_copy, enrollment_consent):
+        self.birthday = birthday
+        self.phone = phone
+        self.birth_place = birth_place
+        self.need_hostel = need_hostel
+        self.photo = photo
+        self.agreement_scan = agreement_scan
+        self.is_budgetary = is_budgetary
+        self.original_or_copy = original_or_copy
+        self.enrollment_consent = enrollment_consent
+        # TODO photo uploading
 
     def __str__(self):
         return f"<{self.name} {self.surname} {self.last_name}>"

@@ -41,9 +41,8 @@ app.register_blueprint(client.blueprint)
 # api.add_resource(ReceiptsListResource, "/api/v2/receipts")
 
 
-
 if __name__ == "__main__":
-    admin = Admin(app, name='Admin', template_mode='bootstrap3', url='/admin')
+    admin = Admin(app, name='Admin', template_mode='bootstrap3')
 
     db.create_all()
     db.session.commit()
@@ -54,4 +53,3 @@ if __name__ == "__main__":
     app.secret_key = 'secret'
     app.config['SESSION_TYPE'] = 'filesystem'
     app.run()
-
