@@ -7,17 +7,19 @@ from sqlalchemy import pool
 from alembic import context
 
 # for local migration:
-# if os.getenv('DEBUG', True):
-#     import sys
-#     import pathlib
-#
-#     to_replace = '\\'
-#     replace_by = '\\\\'
-#     path = pathlib.Path(__file__).parent.absolute()
-#     path = str(path).replace(to_replace, replace_by)[:-len('alembic')]
-#     sys.path.insert(0, path)
+if os.getenv('DEBUG', True):
+    import sys
+    import pathlib
+
+    to_replace = '\\'
+    replace_by = '\\\\'
+    path = pathlib.Path(__file__).parent.absolute()
+    path = str(path).replace(to_replace, replace_by)[:-len('alembic___')]
+    sys.path.insert(0, path)
 
 from data.db_session import SqlAlchemyBase
+from alembic.config import Config
+alembic_cfg = Config("alembic___.ini")
 import data.__all_models
 
 # this is the Alembic Config object, which provides
