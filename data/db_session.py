@@ -20,6 +20,7 @@ def global_init(db_file):
     # для heroku (там бесплатные плагины только с postgres):
     if db_file.startswith("postgres://"):
         conn_str = db_file
+        print("POSTGRES")
     else:
         conn_str = f'sqlite:///{db_file.strip()}?check_same_thread=False'
     print(f"Подключение к базе данных по адресу {conn_str} ...")
@@ -29,10 +30,7 @@ def global_init(db_file):
 
     from . import __all_models
 
-    session = __factory()
     SqlAlchemyBase.metadata.create_all(engine)
-    session.commit()
-    session.close()
 
 
 def create_session() -> Session:
