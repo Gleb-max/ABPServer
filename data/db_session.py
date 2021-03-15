@@ -1,15 +1,16 @@
 import sqlalchemy as sa
+import os
 import sqlalchemy.orm as orm
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import Session
 import sqlalchemy.ext.declarative as dec
 from flask import Flask
-
 from data.DatabaseConfig import Config
 
 app = Flask(__name__)
 app.config.from_object(Config)
+app.secret_key = os.getenv("SECRET_KEY", 'very secret key')
 db = SQLAlchemy(app)
 # migrate = Migrate(app, db, render_as_batch=True)
 
