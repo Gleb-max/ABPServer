@@ -20,7 +20,7 @@ def global_init(db_file):
     # для heroku (там бесплатные плагины только с postgres):
     if db_file.startswith("postgres://"):
         conn_str = db_file
-        print("POSTGRES")
+        print("POSTGRES selected")
     else:
         conn_str = f'sqlite:///{db_file.strip()}?check_same_thread=False'
     print(f"Подключение к базе данных по адресу {conn_str} ...")

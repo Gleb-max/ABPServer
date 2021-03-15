@@ -17,7 +17,6 @@ app.config["SECRET_KEY"] = "ABP_SECRET_KEY"
 # set optional bootswatch theme
 app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
 
-
 # login_manager = LoginManager()
 # login_manager.init_app(app)
 api = Api(app)
@@ -272,6 +271,9 @@ def policy():
 
 
 # initialize db
+if not os.getenv('DEBUG'):
+    DB_NAME = 'postgres://kkhzsmfwwklbei:c89938e8948e5842a60129f7be2d6ca20b38f71c9fa684a55edb1be0adb3e2d1@ec2-54-155-35-88.eu-west-1.compute.amazonaws.com:5432/d3midfh7cpng20'
+
 db_session.global_init(os.environ.get("DATABASE_URL", DB_NAME))
 
 # register blueprint for mobile and desktop clients
