@@ -1,7 +1,7 @@
 import re
 from data.user import User
 from blueprints.constants import *
-from data.db_session import create_session
+# from data.db_session import create_session
 from flask import jsonify, Blueprint, make_response, request
 from utils import filling_all
 

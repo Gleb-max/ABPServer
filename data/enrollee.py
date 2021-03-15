@@ -4,9 +4,10 @@ from sqlalchemy_serializer import SerializerMixin
 
 from .db_session import SqlAlchemyBase
 from sqlalchemy import orm
+from data.db_session import db
 
 
-class Enrollee(SqlAlchemyBase, UserMixin, SerializerMixin):
+class Enrollee(db.Model):
     __tablename__ = "enrollee"
 
     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)

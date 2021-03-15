@@ -1,6 +1,8 @@
 import os
 
 from flask_admin.contrib.sqla import ModelView
+from flask_migrate import Migrate
+from flask_sqlalchemy import SQLAlchemy
 
 from data.user import User
 from data.__all_models import *
@@ -11,15 +13,23 @@ from flask_restful import Api
 from flask import Flask, render_template, redirect, abort, url_for
 from flask_login import LoginManager, login_required, logout_user, current_user, login_user
 from flask_admin import Admin
+from data.db_session import app, db
 
-app = Flask(__name__)
-app.config["SECRET_KEY"] = "ABP_SECRET_KEY"
-# set optional bootswatch theme
-app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
+# app = Flask(__name__)
+# app.config["SECRET_KEY"] = "ABP_SECRET_KEY"
+# # set optional bootswatch theme
+# app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
+
+import logging
+from data.DatabaseConfig import Config
+
+
+
+
 
 # login_manager = LoginManager()
 # login_manager.init_app(app)
-api = Api(app)
+# api = Api(app)
 
 
 # @login_manager.user_loader
@@ -271,8 +281,14 @@ def policy():
 
 
 # initialize db
-DB_NAME = 'postgres://kkhzsmfwwklbei:c89938e8948e5842a60129f7be2d6ca20b38f71c9fa684a55edb1be0adb3e2d1@ec2-54-155-35-88.eu-west-1.compute.amazonaws.com:5432/d3midfh7cpng20'
-db_session.global_init(os.environ.get("DATABASE_URL", DB_NAME))
+# db_session.global_init(os.environ.get("DATABASE_URL", DB_NAME))
+db.create_all()
+db.session.commit()
+
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    level=logging.INFO)
+
+
 
 # register blueprint for mobile and desktop clients
 app.register_blueprint(client.blueprint)
@@ -286,7 +302,11 @@ app.register_blueprint(client.blueprint)
 
 if __name__ == "__main__":
     admin = Admin(app, name='Admin-panel', template_mode='bootstrap3')
-    session = db_session.create_session()
+
+    db.create_all()
+    db.session.commit()
+
+    session = db.session
     admin.add_view(ModelView(user.User, session))
     admin.add_view(ModelView(enrollee.Enrollee, session))
 

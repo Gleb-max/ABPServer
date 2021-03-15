@@ -8,4 +8,5 @@ flask-restful
 flask-wtf
 flask-admin
 sqlalchemy-serializer
-
+flask-migrate
+flask-script

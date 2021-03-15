@@ -4,9 +4,10 @@ from sqlalchemy_serializer import SerializerMixin
 
 from .db_session import SqlAlchemyBase
 from sqlalchemy import orm
+from data.db_session import db
 
 
-class Passport(SqlAlchemyBase, UserMixin, SerializerMixin):
+class Passport(db.Model):
     __tablename__ = "passport"
 
     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
