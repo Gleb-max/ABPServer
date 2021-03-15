@@ -1,21 +1,23 @@
 import os
-import pickle
-# from fns.api import FnsApi
-from data.users import User
+
+from flask_admin.contrib.sqla import ModelView
+
+from data.user import User
+from data.__all_models import *
 from data import db_session
 from blueprints import client
 from constants import DB_NAME
 from flask_restful import Api
-from data.receipts import Receipt
-# from utils import parse_scan_result, predict, get_datetime
-# from resources.users import UsersListResource, UsersResource
 from flask import Flask, render_template, redirect, abort, url_for
-# from resources.receipts import ReceiptsListResource, ReceiptsResource
 from flask_login import LoginManager, login_required, logout_user, current_user, login_user
-
+from flask_admin import Admin
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "ABP_SECRET_KEY"
+# set optional bootswatch theme
+app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
+
+
 # login_manager = LoginManager()
 # login_manager.init_app(app)
 api = Api(app)
@@ -32,14 +34,8 @@ api = Api(app)
 @app.route("/")
 def index():
     return "SGU API"
-    # receipts = []
-    # if current_user.is_authenticated:
-    #     session = db_session.create_session()
-    #     receipts = session.query(Receipt).filter(Receipt.user == current_user).order_by(Receipt.date.desc()).all()
-    #     session.close()
-    # return render_template("index.html", receipts=receipts, title="Receipts Pro")
-#
-#
+
+
 # @app.route("/login", methods=["GET", "POST"])
 # def login():
 #     if current_user.is_authenticated:
@@ -73,8 +69,8 @@ def index():
 #         session.close()
 #         return redirect("/")
 #     return render_template("login.html", title="Авторизация", form=form)
-#
-#
+
+
 # @app.route("/register", methods=["GET", "POST"])
 # def register():
 #     if current_user.is_authenticated:
@@ -117,8 +113,8 @@ def index():
 #                                form=form,
 #                                message="К этому номеру уже привязан аккаунт")
 #     return render_template("register.html", title="Регистрация", form=form)
-#
-#
+
+
 # @app.route("/restore", methods=["GET", "POST"])
 # def restore():
 #     if current_user.is_authenticated:
@@ -136,8 +132,8 @@ def index():
 #                                message="Неверный номер телефона",
 #                                form=form)
 #     return render_template("restore.html", title="Восстановление", form=form)
-#
-#
+
+
 # @app.route("/receipt_add", methods=["GET", "POST"])
 # @login_required
 # def add_receipt():
@@ -289,4 +285,10 @@ app.register_blueprint(client.blueprint)
 
 
 if __name__ == "__main__":
+    admin = Admin(app, name='Admin-panel', template_mode='bootstrap3')
+    session = db_session.create_session()
+    admin.add_view(ModelView(user.User, session))
+    admin.add_view(ModelView(enrollee.Enrollee, session))
+
     app.run()
+    session.close()

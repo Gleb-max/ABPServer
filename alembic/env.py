@@ -6,9 +6,16 @@ from sqlalchemy import pool
 
 from alembic import context
 
-# uncomment for local migration:
-# import sys
-# sys.path.insert(0, "YOUR_PATH_TO_PROJECT")
+# for local migration:
+if os.getenv('DEBUG', True):
+    import sys
+    import pathlib
+
+    to_replace = '\\'
+    replace_by = '\\\\'
+    path = pathlib.Path(__file__).parent.absolute()
+    path = str(path).replace(to_replace, replace_by)[:-len('alembic')]
+    sys.path.insert(0, path)
 
 from data.db_session import SqlAlchemyBase
 import data.__all_models
@@ -29,6 +36,7 @@ config.set_section_option(section, "DATABASE_URL", os.environ.get("DATABASE_URL"
 # target_metadata = mymodel.Base.metadata
 
 target_metadata = SqlAlchemyBase.metadata
+
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

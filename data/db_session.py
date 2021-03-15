@@ -29,7 +29,10 @@ def global_init(db_file):
 
     from . import __all_models
 
+    session = __factory()
     SqlAlchemyBase.metadata.create_all(engine)
+    session.commit()
+    session.close()
 
 
 def create_session() -> Session:

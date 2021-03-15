@@ -1,75 +1,81 @@
-# from fns.api import FnsApi
-from data.users import User
-from data.receipts import Receipt
+import re
+from data.user import User
 from blueprints.constants import *
 from data.db_session import create_session
 from flask import jsonify, Blueprint, make_response, request
-from utils import filling_all, parse_scan_result, get_datetime
-
+from utils import filling_all
 
 blueprint = Blueprint("clients_api", __name__, template_folder="templates")
 
 
 @blueprint.route("/client/restore/", methods=["POST"])
-def restore():        # восстановление пароля
+def restore():  # восстановление пароля
     phone = request.form.get("phone")
     if not filling_all(phone):
         return make_response(REQUIRED_FIELDS_NOT_FILLING, 400)
 
-    phone = phone[1:]
-    # result = FnsApi.restore(phone)
-    # print(result.text, result.status_code)
-    # if not result.text:
-    #     return RESULT_SUCCESS
     return make_response({"result": "OK"}, 200)
 
 
 @blueprint.route("/client/registration/", methods=["POST"])
-def registration():       # регистрация пользователя
+def user_registration():
     name = request.form.get("name")
-    email = request.form.get("email")
-    phone = request.form.get("phone")
+    surname = request.form.get("surname")
+    last_name = request.form.get("last_name")
 
-    # if not filling_all(name, email, phone):
-    #     return make_response(REQUIRED_FIELDS_NOT_FILLING, 400)
-    # phone = phone[1:]
-    # result = FnsApi.register(phone, email, name)
-    # print(result.text, result.status_code)
-    #
-    # if result.status_code == 204:
-    #     session = create_session()
-    #     user = User(phone=phone, name=name, email=email)
-    #     session.add(user)
-    #     session.commit()
-    #     session.close()
-    #     return RESULT_SUCCESS
-    return make_response({"result": "OK"}, 200)
+    is_male = request.form.get("is_male")
+    email = request.form.get("email")
+    password = request.form.get("password")
+
+    if not filling_all(name, surname, last_name, is_male, email, password):
+        return make_response(REQUIRED_FIELDS_NOT_FILLING, 400)
+
+    name = name.capitalize()
+    surname = surname.capitalize()
+    last_name = last_name.capitalize()
+    is_male = is_male == 'True'
+
+    email_pattern = r"\"?([-a-zA-Z0-9.`?{}]+@\w+\.\w+)\"?"
+    pattern = re.compile(email_pattern)
+    if not re.match(pattern, email):
+        return make_response(EMAIL_INCORRECT, 400)
+
+    session = create_session()
+    user = User(
+        name, surname, last_name,
+        is_male, email, password
+    )
+
+    try:
+        session.add(user)
+        session.commit()
+        session.close()
+    except Exception as e:
+        print(f"Register user error: {e}")
+        return make_response(INTERNAL_ERROR, 500)
+
+    return make_response(RESULT_SUCCESS, 200)
 
 
 @blueprint.route("/client/login/", methods=["POST"])
-def login():     # вход в систему
-    phone = request.form.get("phone")
+def user_login():
+    email = request.form.get("email")
     password = request.form.get("password")
-    # if not filling_all(phone, password):
-    #     return make_response(REQUIRED_FIELDS_NOT_FILLING, 400)
-    # phone = phone[1:]
-    # result = FnsApi.login(phone, password)
-    # print(result.text, result.status_code)
-    #
-    # if result.status_code == 403:
-    #     return make_response({"result": result.text}, 403)
-    # session = create_session()
-    # user = session.query(User).filter(User.phone == phone).first()
-    # if user is None:
-    #     user = User(phone=phone)
-    #     result_json = result.json()
-    #     user.email = result_json["email"]
-    #     user.name = result_json["name"]
-    #     session.add(user)
-    #     session.commit()
-    # session.close()
-    # return result.text
-    return make_response({"result": "OK"}, 200)
+
+    if not filling_all(email, password):
+        return make_response(REQUIRED_FIELDS_NOT_FILLING, 400)
+
+    session = create_session()
+    user = session.query(User).filter(User.email == email).first()
+    if user == None:
+        return make_response(USER_NOT_FOUND, 401)
+
+    if user.password == password:
+        session.close()
+        return make_response(RESULT_SUCCESS, 200)
+    else:
+        session.close()
+        return make_response(FORM_INCORRECT, 401)
 
 
 @blueprint.errorhandler(404)

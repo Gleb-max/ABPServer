@@ -1,9 +1,10 @@
 alembic
 flask
-# gunicorn
+gunicorn
 SQLAlchemy
-# psycopg2
+psycopg2
 flask-login
 flask-restful
 flask-wtf
+flask-admin
 sqlalchemy-serializer
