@@ -10,7 +10,7 @@ from data.db_session import db
 class StudyDirection(db.Model):
     __tablename__ = "study_direction"
 
-    id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
+    id = sa.Column(sa.Integer, primary_key=True, autoincrement=True, unique=True)
 
     # Relationships
     enrollee_id = sa.Column(sa.Integer, sa.ForeignKey('enrollee.id'))

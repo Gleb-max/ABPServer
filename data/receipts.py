@@ -10,7 +10,7 @@ class Receipt(db.Model):
     __tablename__ = "receipts"
 
     id = sqlalchemy.Column(sqlalchemy.Integer,
-                           primary_key=True, autoincrement=True)
+                           primary_key=True, autoincrement=True, unique=True)
     scan_code = sqlalchemy.Column(sqlalchemy.String,
                                   index=True, unique=False, nullable=False)
     receipt = sqlalchemy.Column(sqlalchemy.Binary, nullable=False)

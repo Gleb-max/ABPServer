@@ -282,9 +282,12 @@ def policy():
 
 # initialize db
 # db_session.global_init(os.environ.get("DATABASE_URL", DB_NAME))
-db.drop_all()
-db.create_all()
-db.session.commit()
+# db.drop_all()
+# print('Drop tables...')
+# db.session.commit()
+# db.create_all()
+# print('Create tables...')
+# db.session.commit()
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)

@@ -10,7 +10,7 @@ from data.db_session import db
 class ExamInfo(db.Model):
     __tablename__ = "exam_info"
 
-    id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
+    id = sa.Column(sa.Integer, primary_key=True, autoincrement=True, unique=True)
 
     # Relationships
     _enrollee = orm.relationship("Enrollee", back_populates="exam_data_list", uselist=False)
