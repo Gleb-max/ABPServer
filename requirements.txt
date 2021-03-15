@@ -1,0 +1,9 @@
+alembic
+flask
+# gunicorn
+SQLAlchemy
+# psycopg2
+flask-login
+flask-restful
+flask-wtf
+sqlalchemy-serializer

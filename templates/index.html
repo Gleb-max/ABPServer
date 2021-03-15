@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% if current_user.is_authenticated %}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="{{url_for('static', filename='js/receipt.js')}}"></script>
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+<div class="container">
+
+  <h2>Мои Чеки</h2>
+
+    <p class="my-list">
+        <a class="btn btn-primary " href="/receipt_add">Добавить чек</a>
+    </p>
+
+  <div class="panel-group">
+
+      {% for item in receipts %}
+
+      <div class="panel panel-primary">
+        <div class="panel-heading">Чек от {{ item.date }}</div>
+        <div class="panel-body">
+            <button class="btn btn-link" type="button" onclick="get_receipt({{ item.id }})">
+                    Подробнее
+            </button>
+        </div>
+      </div>
+      <div id="modal{{ item.id }}"></div>
+
+      {% endfor %}
+  </div>
+
+</div>
+
+{% endif %}
+
+{% endblock %}
