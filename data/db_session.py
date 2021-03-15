@@ -24,9 +24,9 @@ def global_init(db_file):
     else:
         conn_str = f'sqlite:///{db_file.strip()}?check_same_thread=False'
     print(f"Подключение к базе данных по адресу {conn_str} ...")
-
-    engine = sa.create_engine(conn_str, echo=False)
-    print('engine was created')
+    print(conn_str)
+    engine = sa.create_engine(conn_str, echo=True)
+    print('Подключено')
     __factory = orm.sessionmaker(bind=engine)
 
     from . import __all_models
