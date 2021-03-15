@@ -282,6 +282,7 @@ def policy():
 
 # initialize db
 # db_session.global_init(os.environ.get("DATABASE_URL", DB_NAME))
+db.drop_all()
 db.create_all()
 db.session.commit()
 
