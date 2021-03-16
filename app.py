@@ -39,6 +39,8 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 # register blueprint for mobile and desktop clients
 app.register_blueprint(client.blueprint)
+db.create_all()
+db.session.commit()
 
 # add resources
 # api.add_resource(ReceiptsListResource, "/api/v2/receipts")
@@ -47,7 +49,7 @@ app.register_blueprint(client.blueprint)
 if __name__ == "__main__":
     admin = Admin(app, name='Admin', template_mode='bootstrap3')
     # print(StudyDirection.query.first().enrollee)
-    db.drop_all()
+    # db.drop_all()
     db.create_all()
     db.session.commit()
     print('DB was created')
