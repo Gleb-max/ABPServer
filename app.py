@@ -99,7 +99,7 @@ def get_rating_table():
                 enrollee_statuses.WITHOUT_ORIGINAL <= Enrollee.status,
                 Enrollee.status <= enrollee_statuses.WITH_ORIGINAL,
                 # нужно ли общежитие
-                Enrollee.need_hostel == need_hostel if (need_hostel != None) else None
+                Enrollee.need_hostel == need_hostel if (need_hostel != None ) else True
             )
         ).order_by(Enrollee.get_total_grade).all()
     elif int(direction_id) > 0:  # По Факультетам
@@ -111,7 +111,7 @@ def get_rating_table():
                 # факультет
                 Enrollee.study_direction_id == direction_id,
                 # нужно ли общежитие
-                Enrollee.need_hostel == need_hostel if (need_hostel != None) else None
+                Enrollee.need_hostel == need_hostel if (need_hostel != None ) else True
             )
         ).order_by(Enrollee.get_total_grade).all()
     else:
