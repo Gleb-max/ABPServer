@@ -382,37 +382,13 @@ def send_mail(receiver, header, text):
     print(f'mail to {receiver} sended')
 
 
-@blueprint.route('/client/confirm_form', methods=['POST'])
-def enrollee_confirm_form():
-    enrollee_id = request.form.get('enrollee_id')
-    if enrollee_id.isdigit():
-        enrollee = Enrollee.query.filter_by(id=int(enrollee_id)).first()
-        if enrollee:
-            enrollee.consideration_stage = enrollee_statuses.STAGE_RECEIVED
-            db.session.commit()
-            user = enrollee.user
-            print('Trying to send mail...')
-            send_mail(enrollee.user.email, 'СГУ им. Лимонадова',
-                      f'Добрый день, {user.name} {user.surname} {user.last_name}!\n\n' + \
-                      f'Уведомляем вас, что вы успешно подали документы в ' + \
-                      f'Сызранский государственный университет имени Филиппа Лимонадова. ' + \
-                      f'С этого момента вы участвуете в конкурсе на зачисление.\n\nС уважением,\n' + \
-                      f'приемная комиссия СГУ им. Ф.Лимонадова'
-                      )
-            return make_response(RESULT_SUCCESS, 200)
-        else:
-            return make_response(ENROLLEE_NOT_FOUND, 404)
-
-    return make_response(FORM_INCORRECT, 400)
-
-
 @blueprint.route('/client/revision_form', methods=['POST'])
 def enrollee_revision_form():
     enrollee_id = request.form.get('enrollee_id')
-    incorrect_fields = request.form.get('incorrect_fields')
+    incorrect_fields = request.form.getlist('incorrect_fields')
     print(incorrect_fields, enrollee_id)
-    incorrect_fields = json.loads(incorrect_fields).get('fields')
-
+    # incorrect_fields = json.loads(incorrect_fields).get('fields')
+    # {asdadas: 123123, saddas: [] }
     if enrollee_id.isdigit():
         enrollee = Enrollee.query.filter_by(id=int(enrollee_id)).first()
         if enrollee:
@@ -421,7 +397,7 @@ def enrollee_revision_form():
             user = enrollee.user
             new_line = '\n'
             send_mail(enrollee.user.email, 'СГУ им. Лимонадова',
-                      f'Добрый день, {user.name} {user.surname} {user.last_name}!\n\n'
+                      f'Добрый день, {user.surname} {user.name} {user.last_name}!\n\n'
                       f'Уведомляем вас, что при подаче документов в '
                       f'Сызранский государственный университет имени Филиппа Лимонадова '
                       f'вы допустили ошибки.\n\n'
@@ -439,13 +415,37 @@ def enrollee_revision_form():
     return make_response(FORM_INCORRECT, 400)
 
 
+@blueprint.route('/client/confirm_form', methods=['POST'])
+def enrollee_confirm_form():
+    enrollee_id = request.form.get('enrollee_id')
+    if enrollee_id.isdigit():
+        enrollee = Enrollee.query.filter_by(id=int(enrollee_id)).first()
+        if enrollee:
+            enrollee.consideration_stage = enrollee_statuses.STAGE_RECEIVED
+            db.session.commit()
+            user = enrollee.user
+            print('Trying to send mail...')
+            send_mail(enrollee.user.email, 'СГУ им. Лимонадова',
+                      f'Добрый день, {user.surname} {user.name} {user.last_name}!\n\n' + \
+                      f'Уведомляем вас, что вы успешно подали документы в ' + \
+                      f'Сызранский государственный университет имени Филиппа Лимонадова. ' + \
+                      f'С этого момента вы участвуете в конкурсе на зачисление.\n\nС уважением,\n' + \
+                      f'приемная комиссия СГУ им. Ф.Лимонадова'
+                      )
+            return make_response(RESULT_SUCCESS, 200)
+        else:
+            return make_response(ENROLLEE_NOT_FOUND, 404)
+
+    return make_response(FORM_INCORRECT, 400)
+
+
 def enroll_student(enrollee: Enrollee, is_budget=False):
     enrollee.consideration_stage = enrollee_statuses.STAGE_RECEIVED
     db.session.commit()
     user = enrollee.user
     budget_text = 'бюджет' if is_budget else 'платно'
     send_mail(enrollee.user.email, 'СГУ им. Лимонадова',
-              f'Добрый день, {user.name} {user.surname} {user.last_name}!\n\n ' + \
+              f'Добрый день, {user.surname} {user.name} {user.last_name}!\n\n ' + \
               f'Поздравляем!!!\n\n' + \
               f'Вы поступили в Сызранский государственный университет имени Филиппа Лимонадова.\n' + \
               f'Направление: {enrollee.study_direction.name}.\n' + \
