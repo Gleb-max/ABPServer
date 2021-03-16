@@ -162,6 +162,8 @@ class EnrollsList(Resource):
             combined_dict = enrollee.to_dict()
             combined_dict.update(user_dict)
 
+            combined_dict['enrollee_pk'] = enrollee.id
+
             answer.append(combined_dict)
 
         return json.dumps({'enrolls': answer})
