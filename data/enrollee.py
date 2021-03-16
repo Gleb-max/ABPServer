@@ -30,8 +30,8 @@ class Enrollee(db.Model):
     #                                                back_populates='enrolls')
 
     # Exam data
-    exam_data_id = sa.Column(sa.Integer, sa.ForeignKey('exam_info.id'))
-    exam_data_list = orm.relationship("ExamInfo", back_populates="_enrollee", uselist=True)
+    exam_data_list = orm.relationship("ExamInfo", back_populates="enrollee", uselist=True)
+
 
     # Common information
     birthday = sa.Column(sa.Date, nullable=True)
@@ -58,7 +58,7 @@ class Enrollee(db.Model):
         # TODO photo uploading
 
     def __str__(self):
-        return f"<{self.user.name}>"
+        return f"<Enrollee>"
 
     def __repr__(self):
         return self.__str__()

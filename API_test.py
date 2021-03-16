@@ -3,7 +3,7 @@ import json
 
 url = "http://127.0.0.1:5000/client/add/enrolleeData/"
 
-# files = {'photo': open('test_img.jpg', 'rb')}
+files = {'photo': open('test_img.jpg', 'rb')}
 body = {
     'user_id': '1',
     'name': 'Poser',
@@ -14,6 +14,6 @@ body = {
 headers = {
     'authorization': "Bearer {token}"
 }
-response = requests.request("POST", url, data=body)
+response = requests.request("POST", url, data=body, files=files)
 
 print(response.text)

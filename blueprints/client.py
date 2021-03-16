@@ -132,7 +132,7 @@ def add_enrollee_data():
         if not re.match(pattern, email):
             return make_response(EMAIL_INCORRECT, 400)
 
-    user = User.query.filter_by(id=user_id).first()
+    user = User.query.filter_by(id=int(user_id)).first()
 
     if not user:
         return make_response(USER_NOT_FOUND, 400)
@@ -172,10 +172,14 @@ def add_enrollee_data():
         check_field_and_set("is_budgetary", enrollee, is_budgetary)
         check_field_and_set("original_or_copy", enrollee, original_or_copy)
         if photo:
-            check_field_and_set("photo", enrollee, photo.read())
+            path = 'media/photos/' + str(user_id) + photo.filename
+            photo.save(path)
+            check_field_and_set("photo", enrollee, path)
 
         if enrollment_consent:
-            check_field_and_set("photo", enrollee, enrollment_consent.read())
+            path = 'media/consents/' + str(user_id) + enrollment_consent.filename
+            enrollment_consent.save(path)
+            check_field_and_set("enrollment_consent", enrollee, enrollment_consent.read())
 
         if study_direction_id:
             direction = StudyDirection.query.filter_by(id=int(study_direction_id)).first()
@@ -227,6 +231,8 @@ def add_enrollee_data():
         check_field_and_set("when_issued", passport, when_issued)
         check_field_and_set("registration_address", passport, registration_address)
         if passport_scan:
+            path = 'media/passports/' + str(user_id) + passport_scan.filename
+            passport_scan.save(path)
             check_field_and_set("scan", passport, passport_scan.read())
 
         user.enrollee.passport = passport
@@ -245,6 +251,8 @@ def add_enrollee_data():
         check_field_and_set("certificate_number", school_certificate, certificate_number)
 
         if certificate_scan:
+            path = 'media/passports/' + str(user_id) + certificate_scan.filename
+            certificate_scan.save(path)
             check_field_and_set("certificate_scan", school_certificate, certificate_scan)
 
         user.enrollee.school_certificate = school_certificate
