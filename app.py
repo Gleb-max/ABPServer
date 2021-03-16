@@ -3,6 +3,7 @@ import json
 from flask_admin.contrib.sqla import ModelView
 from sqlalchemy import func
 
+from data import faculty
 from data.__all_models import *
 from blueprints import client
 from flask import Flask, render_template, redirect, abort, url_for, send_from_directory, request, make_response
@@ -30,6 +31,7 @@ def initAdmin():
     admin.add_view(ModelView(passport.Passport, db.session))
     admin.add_view(ModelView(school_certificate.SchoolCertificate, db.session))
     admin.add_view(ModelView(study_direction.StudyDirection, db.session))
+    admin.add_view(ModelView(faculty.Faculty, db.session))
     admin.add_view(ModelView(exam_info.ExamInfo, db.session))
     admin.add_view(ModelView(individual_achievements.IndividualAchievement, db.session))
 
@@ -111,6 +113,10 @@ if __name__ == "__main__":
     # db.drop_all()
     db.create_all()
     db.session.commit()
+
+    from document_creator import create_order_of_admission
+    create_order_of_admission('test', Enrollee.query.all(), StudyDirection.query.first())
+
     print('DB was created')
     host = PRODUCTION_HOST if PRODUCTION else LOCAL_HOST
     app.run(host=host, port=PORT)

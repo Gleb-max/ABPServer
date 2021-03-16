@@ -1,6 +1,8 @@
 import re
 import json
 
+from transliterate import slugify
+
 from config import MAIL_PASSWORD, MAIL_LOGIN
 from data import account_types
 from data.enrollee import Enrollee
@@ -13,6 +15,8 @@ from data.user import User
 from blueprints.constants import *
 # from data.db_session import create_session
 from flask import jsonify, Blueprint, make_response, request
+
+from document_creator import create_order_of_admission
 from utils import filling_all
 from data.db_session import db
 from datetime import datetime
@@ -404,18 +408,24 @@ def enrollee_confirm_form():
 @blueprint.route('/client/revision_form', methods=['POST'])
 def enrollee_revision_form():
     enrollee_id = request.form.get('enrollee_id')
+    incorrect_fields = request.form.get('incorrect_fields')
+    incorrect_fields = json.loads(incorrect_fields).get('fields')
+
     if enrollee_id.isdigit():
         enrollee = Enrollee.query.filter_by(id=int(enrollee_id)).first()
         if enrollee:
             enrollee.consideration_stage = enrollee_statuses.STAGE_FOR_REVISION
             db.session.commit()
             user = enrollee.user
+            new_line = '\n'
             send_mail(enrollee.user.email, 'СГУ им. Лимонадова',
                       f'Добрый день, {user.name} {user.surname} {user.last_name}!\n\n'
                       f'Уведомляем вас, что при подаче документов в '
                       f'Сызранский государственный университет имени Филиппа Лимонадова '
                       f'вы допустили ошибки.\n\n'
-                      f'Просим исправить ошибки в ближайшее время.\n\n'
+                      f'Просим исправить ошибки:\n'
+                      f'{new_line.join(incorrect_fields)}'
+                      f'в ближайшее время.\n\n'
                       f'С уважением,\n'
                       f'приемная комиссия СГУ им. Ф.Лимонадова'
                       )
@@ -427,25 +437,72 @@ def enrollee_revision_form():
     return make_response(FORM_INCORRECT, 400)
 
 
+def enroll_student(enrollee: Enrollee, is_budget=False):
+    enrollee.consideration_stage = enrollee_statuses.STAGE_RECEIVED
+    db.session.commit()
+    user = enrollee.user
+    budget_text = 'бюджет' if is_budget else 'платно'
+    send_mail(enrollee.user.email, 'СГУ им. Лимонадова',
+              f'Добрый день, {user.name} {user.surname} {user.last_name}!\n\n '
+              f'Поздравляем!!!\n\n'
+              f'Вы поступили в Сызранский государственный университет имени Филиппа Лимонадова.\n'
+              f'Направление: {enrollee.study_direction.name}.\n'
+              f'Форма: {budget_text}.\n\n'
+              f'С уважением,\n'
+              f'приемная комиссия СГУ им. Ф.Лимонадова'
+              )
+
+
+@blueprint.route('/client/enroll_users', methods=['POST'])
+def enroll_users():
+    # Формирование списков на зачисление
+    need_original = request.form.get('need_original')
+    direction_id = request.form.get('direction_id')
+    direction = StudyDirection.query.filter_by(id=int(direction_id)).first()
+    if not direction:
+        return make_response(FORM_INCORRECT, 400)
+
+    if need_original == None:
+        pass
+    elif need_original.lower() == 'true':
+        need_original = True
+    else:
+        need_original = False
+
+    from sqlalchemy import and_
+    enrolls = Enrollee.query.filter(
+        and_(
+            Enrollee.study_direction_id == direction_id,
+            (True if (need_original == None) else Enrollee.original_or_copy == need_original)
+        )
+    ).order_by(Enrollee.get_total_grade).all()
+
+    i = 0
+    enrolled_users = []
+    # Зачислить бюджетников
+    while i < direction.budget_count:
+        if i < len(enrolls):
+            enroll_student(enrolls[i], is_budget=True)
+            enrolled_users.append(enrolls[i])
+        i += 1
+
+    # Зачислить платников
+    for j in range(i, len(enrolls)):
+        enroll_student(enrolls[j], is_budget=False)
+        enrolled_users.append(enrolls[i])
+
+    file_path = create_order_of_admission(f'media/commands/{slugify(direction.name)}', enrolled_users, direction)
+
+    return make_response(json.dumps({'file_url': file_path}), 200)
+
+
 @blueprint.route('/client/enroll', methods=['POST'])
 def enroll_user():
     enrollee_id = request.form.get('enrollee_id')
     if enrollee_id.isdigit():
         enrollee = Enrollee.query.filter_by(id=int(enrollee_id)).first()
         if enrollee:
-            enrollee.consideration_stage = enrollee_statuses.STAGE_RECEIVED
-            db.session.commit()
-            user = enrollee.user
-            budget_text = 'бюджет' if enrollee.is_budgetary else 'платно'
-            send_mail(enrollee.user.email, 'СГУ им. Лимонадова',
-                      f'Добрый день, {user.name} {user.surname} {user.last_name}!\n\n '
-                      f'Поздравляем!!!\n\n'
-                      f'Вы поступили в Сызранский государственный университет имени Филиппа Лимонадова.\n'
-                      f'Направление: {enrollee.study_direction.name}. Форма: {budget_text}\n\n'
-                      f'С уважением,\n'
-                      f'приемная комиссия СГУ им. Ф.Лимонадова'
-                      )
-
+            enroll_student(enrollee, enrollee.is_budgetary)
             return make_response(RESULT_SUCCESS, 200)
         else:
             return make_response(ENROLLEE_NOT_FOUND, 404)

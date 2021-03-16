@@ -1,10 +1,10 @@
 import sqlalchemy as sa
-from flask_login import UserMixin
 from sqlalchemy_serializer import SerializerMixin
 
 
 from sqlalchemy import orm
 from data.db_session import db
+from data.faculty import Faculty
 
 
 class StudyDirection(db.Model, SerializerMixin):
@@ -16,7 +16,10 @@ class StudyDirection(db.Model, SerializerMixin):
     # Relationships
     enrolls = orm.relationship("Enrollee", back_populates="study_direction")
 
+    faculty = orm.relationship(Faculty, back_populates='directions')
+    faculty_id = sa.Column(sa.Integer, sa.ForeignKey('faculty.id', ondelete='CASCADE'))
+
     name = sa.Column(sa.String(100), nullable=False)
-    # budget_count = sa.Column(sa.SmallInteger(), nullable=True)
+    budget_count = sa.Column(sa.SmallInteger(), nullable=True)
     description = sa.Column(sa.Text, nullable=True)
 
