@@ -473,6 +473,8 @@ def enroll_users():
     from sqlalchemy import and_
     enrolls = Enrollee.query.filter(
         and_(
+            # заполнившие все поля
+            enrollee_statuses.WITHOUT_ORIGINAL <= Enrollee.status <= enrollee_statuses.WITH_ORIGINAL,
             Enrollee.study_direction_id == direction_id,
             (True if (need_original == None) else Enrollee.original_or_copy == need_original)
         )
@@ -485,6 +487,7 @@ def enroll_users():
         if i < len(enrolls):
             enroll_student(enrolls[i], is_budget=True)
             enrolled_users.append(enrolls[i])
+        print(i)
         i += 1
 
     # Зачислить платников

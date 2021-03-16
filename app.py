@@ -1,9 +1,9 @@
 import json
 
 from flask_admin.contrib.sqla import ModelView
-from sqlalchemy import func
+from sqlalchemy import func, and_
 
-from data import faculty
+from data import faculty, enrollee_statuses
 from data.__all_models import *
 from blueprints import client
 from flask import Flask, render_template, redirect, abort, url_for, send_from_directory, request, make_response
@@ -77,19 +77,50 @@ def get_rating_table():
     enrolls = []
     print(direction_id, need_hostel)
 
-    if need_hostel == 'true':
-        enrolls = Enrollee.query.filter_by(need_hostel=True).order_by(Enrollee.get_total_grade).all()
-    elif int(direction_id) < 0:  # Весь ВУЗ
-        from sqlalchemy import desc
-        enrolls = Enrollee.query.order_by(Enrollee.get_total_grade).all()
+    if need_hostel == None:
+        pass
+    elif need_hostel.lower() == 'true':
+        need_hostel = True
+    elif need_hostel.lower() == 'false':
+        need_hostel = False
+
+    # if need_hostel == 'true':
+    #     enrolls = Enrollee.query.filter(
+    #         and_(
+    #             enrollee_statuses.WITHOUT_ORIGINAL <= Enrollee.status <= enrollee_statuses.WITH_ORIGINAL,
+    #             Enrollee.need_hostel == True
+    #         )
+    #     ).order_by(Enrollee.get_total_grade).all()
+
+    if int(direction_id) < 0:  # Весь ВУЗ
+        enrolls = Enrollee.query.filter(
+            and_(
+                # заполнившие все поля
+                enrollee_statuses.WITHOUT_ORIGINAL <= Enrollee.status <= enrollee_statuses.WITH_ORIGINAL,
+                # нужно ли общежитие
+                Enrollee.need_hostel in [need_hostel] if (need_hostel != None) else [True, False]
+            )
+        ).order_by(Enrollee.get_total_grade).all()
     elif int(direction_id) > 0:  # По Факультетам
-        enrolls = Enrollee.query.filter_by(study_direction_id=direction_id).order_by(Enrollee.get_total_grade).all()
+        enrolls = Enrollee.query.filter(
+            and_(
+                # заполнившие все поля
+                enrollee_statuses.WITHOUT_ORIGINAL <= Enrollee.status <= enrollee_statuses.WITH_ORIGINAL,
+                # факультет
+                Enrollee.study_direction_id == direction_id,
+                # нужно ли общежитие
+                Enrollee.need_hostel in [need_hostel] if (need_hostel != None) else [True, False]
+            )
+        ).order_by(Enrollee.get_total_grade).all()
     else:
         return make_response({'result': 'Incorrect request params'}, 400)
 
     ans = []
     for enr in enrolls:
-        ans.append(enr.to_dict(only=('get_exam_total_grade', 'get_individual_grade', 'original_or_copy')))
+        ans.append({'exam_tota_grade': enr.get_exam_total_grade(),
+                    'individual_grade': enr.get_individual_grade(),
+                    'is_original': enr.original_or_copy
+        })
     return make_response(json.dumps({'table': ans}), 200)
 
 
@@ -111,12 +142,22 @@ api.add_resource(EnrollsList, "/api/v2/enrolls")
 
 if __name__ == "__main__":
     # db.drop_all()
+    # for i in range(10):
+    #     user = User(
+    #         'user' + str(User.query.count()), 'user' + str(User.query.count()), 'user' + str(User.query.count() + 2),
+    #         True, str(User.query.count()) + '@mail.ri', '123'
+    #     )
+    #     db.session.add(user)
+    #     db.session.commit()
+    # db.session.close()
+
     db.create_all()
     db.session.commit()
     print(Enrollee.query.first().id)
     print(User.query.first().id)
 
     from document_creator import create_order_of_admission
+
     create_order_of_admission('test', Enrollee.query.all(), StudyDirection.query.first())
 
     print('DB was created')
