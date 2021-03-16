@@ -38,11 +38,11 @@ class Enrollee(db.Model):
     phone = sa.Column(sa.String(20), nullable=True)
     birth_place = sa.Column(sa.String(200), nullable=True)
     need_hostel = sa.Column(sa.Boolean, nullable=True)
-    photo = sa.Column(sa.BLOB, nullable=True)
-    agreement_scan = sa.Column(sa.BLOB, nullable=True)
+    photo = sa.Column(sa.String(500), nullable=True)
+    agreement_scan = sa.Column(sa.String(500), nullable=True)
     is_budgetary = sa.Column(sa.Boolean)
     original_or_copy = sa.Column(sa.Boolean, nullable=True)
-    enrollment_consent = sa.Column(sa.BLOB, nullable=True)
+    enrollment_consent = sa.Column(sa.String(500), nullable=True)
 
     def __init__(self, birthday=None, phone=None, birth_place=None, need_hostel=None, photo=None, agreement_scan=None,
                  is_budgetary=None, original_or_copy=None, enrollment_consent=None):
