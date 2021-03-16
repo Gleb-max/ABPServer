@@ -377,7 +377,7 @@ def send_mail(receiver, header, text):
     s = smtp.SMTP(smtp_server)
     s.starttls()
     s.login(MAIL_LOGIN, MAIL_PASSWORD)
-    s.sendmail(MAIL_LOGIN, ['nick-mozg1@mail.ru'], msg.as_string())
+    s.sendmail(MAIL_LOGIN, receiver, msg.as_string())
     s.quit()
     print(f'mail to {receiver} sended')
 
