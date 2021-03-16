@@ -391,11 +391,12 @@ def enrollee_confirm_form():
             enrollee.consideration_stage = enrollee_statuses.STAGE_RECEIVED
             db.session.commit()
             user = enrollee.user
+            print('Trying to send mail...')
             send_mail(enrollee.user.email, 'СГУ им. Лимонадова',
-                      f'Добрый день, {user.name} {user.surname} {user.last_name}!\n\n'
-                      f'Уведомляем вас, что вы успешно подали документы в '
-                      f'Сызранский государственный университет имени Филиппа Лимонадова. '
-                      f'С этого момента вы участвуете в конкурсе на зачисление.\n\nС уважением,\n'
+                      f'Добрый день, {user.name} {user.surname} {user.last_name}!\n\n' + \
+                      f'Уведомляем вас, что вы успешно подали документы в ' + \
+                      f'Сызранский государственный университет имени Филиппа Лимонадова. ' + \
+                      f'С этого момента вы участвуете в конкурсе на зачисление.\n\nС уважением,\n' + \
                       f'приемная комиссия СГУ им. Ф.Лимонадова'
                       )
             return make_response(RESULT_SUCCESS, 200)
@@ -443,12 +444,12 @@ def enroll_student(enrollee: Enrollee, is_budget=False):
     user = enrollee.user
     budget_text = 'бюджет' if is_budget else 'платно'
     send_mail(enrollee.user.email, 'СГУ им. Лимонадова',
-              f'Добрый день, {user.name} {user.surname} {user.last_name}!\n\n '
-              f'Поздравляем!!!\n\n'
-              f'Вы поступили в Сызранский государственный университет имени Филиппа Лимонадова.\n'
-              f'Направление: {enrollee.study_direction.name}.\n'
-              f'Форма: {budget_text}.\n\n'
-              f'С уважением,\n'
+              f'Добрый день, {user.name} {user.surname} {user.last_name}!\n\n ' + \
+              f'Поздравляем!!!\n\n' + \
+              f'Вы поступили в Сызранский государственный университет имени Филиппа Лимонадова.\n' + \
+              f'Направление: {enrollee.study_direction.name}.\n' + \
+              f'Форма: {budget_text}.\n\n' + \
+              f'С уважением,\n' + \
               f'приемная комиссия СГУ им. Ф.Лимонадова'
               )
 
