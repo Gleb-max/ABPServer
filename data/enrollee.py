@@ -17,7 +17,10 @@ class Enrollee(db.Model):
     user = orm.relationship("User", back_populates="enrollee")
     passport = orm.relationship("Passport", uselist=False, back_populates="enrollee")
     school_certificate = orm.relationship("SchoolCertificate", uselist=False, back_populates="enrollee")
-    study_direction = orm.relationship("StudyDirection", uselist=True, back_populates="enrollee")
+
+    study_direction_id = sa.Column(sa.Integer, sa.ForeignKey('study_direction.id'))
+    study_direction = orm.relationship("StudyDirection", back_populates='enrolls')
+
 
     # Individual achievement
     # individual_achievement_id = sa.Column(sa.Integer, sa.ForeignKey('individual_achievement.id'))

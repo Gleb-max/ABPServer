@@ -46,7 +46,7 @@ app.register_blueprint(client.blueprint)
 
 if __name__ == "__main__":
     admin = Admin(app, name='Admin', template_mode='bootstrap3')
-    print(StudyDirection.query.first().enrollee)
+    # print(StudyDirection.query.first().enrollee)
     # db.drop_all()
     db.create_all()
     db.session.commit()

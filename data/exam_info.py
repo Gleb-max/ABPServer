@@ -18,3 +18,8 @@ class ExamInfo(db.Model):
     name = sa.Column(sa.String(100), nullable=False)
     grade = sa.Column(sa.SmallInteger, nullable=False)
 
+    def __init__(self, name, grade):
+        self.name = name
+        self.grade = grade
+
+

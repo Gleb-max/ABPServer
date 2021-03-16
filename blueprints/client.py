@@ -2,6 +2,7 @@ import re
 import json
 
 from data.enrollee import Enrollee
+from data.exam_info import ExamInfo
 from data.passport import Passport
 from data.school_certificate import SchoolCertificate
 from data.study_direction import StudyDirection
@@ -47,6 +48,9 @@ def user_registration():
     pattern = re.compile(email_pattern)
     if not re.match(pattern, email):
         return make_response(EMAIL_INCORRECT, 400)
+
+    if User.query.filter_by(email=email).first():
+        return make_response(USER_ALREADY_CREATED, 409)
 
     user = User(
         name, surname, last_name,
@@ -179,7 +183,23 @@ def add_enrollee_data():
             if not direction:
                 return make_response(DIRECTION_NOT_FOUND, 400)
 
-            enrollee.study_direction = [direction]
+            enrollee.study_direction = direction
+
+        if exams:
+            exams = json.loads(exams)
+            enrollee.exam_data_list = []
+            for item in exams.get('items'):
+                print(item)
+                print(type(item))
+                for sub_name, grade in item.items():
+                    print(sub_name, grade)
+                    exam_info = ExamInfo(sub_name, int(grade))
+                    db.session.add(exam_info)
+                    enrollee.exam_data_list.append(exam_info)
+                    db.session.commit()
+                print(item)
+
+
 
         user.enrollee = enrollee
         db.session.commit()
