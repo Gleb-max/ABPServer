@@ -2,6 +2,7 @@ import os
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 
+
 from data.db_session import app, db
 
 db.drop_all()

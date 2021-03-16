@@ -5,6 +5,7 @@ from sqlalchemy_serializer import SerializerMixin
 
 from sqlalchemy import orm
 from data.db_session import db
+from data.db_session import association_table
 
 
 class IndividualAchievement(db.Model):
@@ -13,7 +14,8 @@ class IndividualAchievement(db.Model):
     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True, unique=True)
 
     # Relationships
-    enrollee = orm.relationship("Enrollee", back_populates="individual_achievement_list", uselist=False)
+    # enrollee = orm.relationship("Enrollee", back_populates="individual_achievement_list", uselist=False)
+    # enrolls = orm.relationship("Enrollee", secondary=association_table, back_populates="individual_achievement_list")
 
     name = sa.Column(sa.String(100), nullable=False)
     additional_score = sa.Column(sa.SmallInteger, nullable=False)
