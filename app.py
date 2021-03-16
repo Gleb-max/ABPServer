@@ -8,6 +8,8 @@ from data.db_session import app, db
 from config import *
 import logging
 
+from data.study_direction import StudyDirection
+
 
 @app.route("/")
 def index():
@@ -44,12 +46,16 @@ app.register_blueprint(client.blueprint)
 
 if __name__ == "__main__":
     admin = Admin(app, name='Admin', template_mode='bootstrap3')
-
+    print(StudyDirection.query.first().enrollee)
+    # db.drop_all()
     db.create_all()
     db.session.commit()
 
     admin.add_view(ModelView(user.User, db.session))
     admin.add_view(ModelView(enrollee.Enrollee, db.session))
+    admin.add_view(ModelView(passport.Passport, db.session))
+    admin.add_view(ModelView(school_certificate.SchoolCertificate, db.session))
+    admin.add_view(ModelView(study_direction.StudyDirection, db.session))
 
     app.secret_key = 'secret'
     app.config['SESSION_TYPE'] = 'filesystem'
