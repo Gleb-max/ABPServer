@@ -5,6 +5,7 @@ from flask import Flask, render_template, redirect, abort, url_for
 from flask_login import LoginManager, login_required, logout_user
 from flask_admin import Admin
 from data.db_session import app, db
+from config import *
 import logging
 
 
@@ -52,4 +53,5 @@ if __name__ == "__main__":
 
     app.secret_key = 'secret'
     app.config['SESSION_TYPE'] = 'filesystem'
-    app.run()
+    host = PRODUCTION_HOST if PRODUCTION else LOCAL_HOST
+    app.run(host=host, port=PORT)
