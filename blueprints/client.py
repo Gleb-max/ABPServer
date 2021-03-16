@@ -189,8 +189,6 @@ def add_enrollee_data():
             exams = json.loads(exams)
             enrollee.exam_data_list = []
             for item in exams.get('items'):
-                print(item)
-                print(type(item))
                 for sub_name, grade in item.items():
                     print(sub_name, grade)
                     exam_info = ExamInfo(sub_name, int(grade))
@@ -198,8 +196,6 @@ def add_enrollee_data():
                     enrollee.exam_data_list.append(exam_info)
                     db.session.commit()
                 print(item)
-
-
 
         user.enrollee = enrollee
         db.session.commit()

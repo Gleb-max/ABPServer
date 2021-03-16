@@ -47,15 +47,16 @@ app.register_blueprint(client.blueprint)
 if __name__ == "__main__":
     admin = Admin(app, name='Admin', template_mode='bootstrap3')
     # print(StudyDirection.query.first().enrollee)
-    # db.drop_all()
+    db.drop_all()
     db.create_all()
     db.session.commit()
-
+    print('DB was created')
     admin.add_view(ModelView(user.User, db.session))
     admin.add_view(ModelView(enrollee.Enrollee, db.session))
     admin.add_view(ModelView(passport.Passport, db.session))
     admin.add_view(ModelView(school_certificate.SchoolCertificate, db.session))
     admin.add_view(ModelView(study_direction.StudyDirection, db.session))
+    admin.add_view(ModelView(exam_info.ExamInfo, db.session))
 
     app.secret_key = 'secret'
     app.config['SESSION_TYPE'] = 'filesystem'

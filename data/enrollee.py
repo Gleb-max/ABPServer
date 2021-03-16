@@ -31,7 +31,7 @@ class Enrollee(db.Model):
 
     # Exam data
     exam_data_id = sa.Column(sa.Integer, sa.ForeignKey('exam_info.id'))
-    exam_data_list = orm.relationship("ExamInfo", back_populates="_enrollee")
+    exam_data_list = orm.relationship("ExamInfo", back_populates="_enrollee", uselist=True)
 
     # Common information
     birthday = sa.Column(sa.Date, nullable=True)
