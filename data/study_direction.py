@@ -7,8 +7,9 @@ from sqlalchemy import orm
 from data.db_session import db
 
 
-class StudyDirection(db.Model):
+class StudyDirection(db.Model, SerializerMixin):
     __tablename__ = "study_direction"
+    serialize_rules = ( '-enrolls', )
 
     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True, unique=True)
 

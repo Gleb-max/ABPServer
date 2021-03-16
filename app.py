@@ -8,7 +8,24 @@ from data.db_session import app, db
 from config import *
 import logging
 
+from data.enrollee import Enrollee
+from data.exam_info import ExamInfo
 from data.study_direction import StudyDirection
+from data.user import User
+
+
+def initAdmin():
+    app.secret_key = 'secret'
+    app.config['SESSION_TYPE'] = 'filesystem'
+
+    admin = Admin(app, name='Admin', template_mode='bootstrap3')
+    admin.add_view(ModelView(user.User, db.session))
+    admin.add_view(ModelView(enrollee.Enrollee, db.session))
+    admin.add_view(ModelView(passport.Passport, db.session))
+    admin.add_view(ModelView(school_certificate.SchoolCertificate, db.session))
+    admin.add_view(ModelView(study_direction.StudyDirection, db.session))
+    admin.add_view(ModelView(exam_info.ExamInfo, db.session))
+    admin.add_view(ModelView(individual_achievements.IndividualAchievement, db.session))
 
 
 @app.route("/")
@@ -40,32 +57,27 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 # register blueprint for mobile and desktop clients
 app.register_blueprint(client.blueprint)
 
-if os.getenv('NEED_DROP_DB', False).lower() in ['true', '1']:
-    db.drop_all()
+if os.getenv('NEED_DROP_DB', 'False').lower() in ['true', '1']:
+    print('dropping db ...')
 
+print('Creating tables...')
 db.create_all()
 db.session.commit()
+print('Initializing admin panel...')
+initAdmin()
 
 # add resources
 # api.add_resource(ReceiptsListResource, "/api/v2/receipts")
 
 
 if __name__ == "__main__":
-    admin = Admin(app, name='Admin', template_mode='bootstrap3')
     # print(StudyDirection.query.first().enrollee)
     # db.drop_all()
+    import json
+    user = User.query.first()
+    info = user.to_dict(rules=("-enrollee",))
     db.create_all()
     db.session.commit()
     print('DB was created')
-    admin.add_view(ModelView(user.User, db.session))
-    admin.add_view(ModelView(enrollee.Enrollee, db.session))
-    admin.add_view(ModelView(passport.Passport, db.session))
-    admin.add_view(ModelView(school_certificate.SchoolCertificate, db.session))
-    admin.add_view(ModelView(study_direction.StudyDirection, db.session))
-    admin.add_view(ModelView(exam_info.ExamInfo, db.session))
-    admin.add_view(ModelView(individual_achievements.IndividualAchievement, db.session))
-
-    app.secret_key = 'secret'
-    app.config['SESSION_TYPE'] = 'filesystem'
     host = PRODUCTION_HOST if PRODUCTION else LOCAL_HOST
     app.run(host=host, port=PORT)

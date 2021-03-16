@@ -1,42 +1,40 @@
+from dataclasses import dataclass
+
 import sqlalchemy as sa
 from flask_login import UserMixin
 from sqlalchemy_serializer import SerializerMixin
 
-from sqlalchemy import orm, MetaData
+from sqlalchemy import orm
 from data.db_session import db
+from data import enrollee_statuses
 
 
-class Enrollee(db.Model):
+class Enrollee(db.Model, SerializerMixin):
     __tablename__ = "enrollee"
-
+    serialize_rules = ('-user',)
     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True, unique=True)
 
     # Relationships
-    user_id = sa.Column(sa.Integer, sa.ForeignKey('users.id'))
+    user_id = sa.Column(sa.Integer, sa.ForeignKey('users.id', ondelete='CASCADE'))
     user = orm.relationship("User", back_populates="enrollee")
-    passport = orm.relationship("Passport", uselist=False, back_populates="enrollee")
-    school_certificate = orm.relationship("SchoolCertificate", uselist=False, back_populates="enrollee")
+    passport = orm.relationship("Passport", uselist=False, back_populates="enrollee", cascade="all,delete")
+    school_certificate = orm.relationship("SchoolCertificate", uselist=False, back_populates="enrollee",
+                                          cascade="all,delete")
 
-    study_direction_id = sa.Column(sa.Integer, sa.ForeignKey('study_direction.id'))
+    study_direction_id = sa.Column(sa.Integer, sa.ForeignKey('study_direction.id', ondelete='CASCADE'))
     study_direction = orm.relationship("StudyDirection", back_populates='enrolls')
 
-
     association_table = sa.Table('association', db.metadata,
-                                 sa.Column('enrollee_id', sa.Integer, sa.ForeignKey('enrollee.id')),
-                                 sa.Column('individual_achievement_id', sa.Integer, sa.ForeignKey('individual_achievement.id'))
+                                 sa.Column('enrollee_id', sa.Integer, sa.ForeignKey('enrollee.id', ondelete='CASCADE')),
+                                 sa.Column('individual_achievement_id', sa.Integer,
+                                           sa.ForeignKey('individual_achievement.id', ondelete='CASCADE'))
                                  )
     individual_achievement_list = orm.relationship("IndividualAchievement",
                                                    secondary=association_table,
-                                                   back_populates='enrolls')
-    # Individual achievement
-    # individual_achievement_id = sa.Column(sa.Integer, sa.ForeignKey('individual_achievement.id'))
-    # individual_achievement_list = orm.relationship("IndividualAchievement", back_populates="enrollee")
-    # individual_achievement_list = orm.relationship("IndividualAchievement",
-    #                                                secondary=association_table,
-    #                                                back_populates='enrolls')
+                                                   back_populates='enrolls', cascade="all,delete")
 
     # Exam data
-    exam_data_list = orm.relationship("ExamInfo", back_populates="enrollee", uselist=True)
+    exam_data_list = orm.relationship("ExamInfo", back_populates="enrollee", uselist=True, cascade="all,delete")
 
     # Common information
     birthday = sa.Column(sa.Date, nullable=True)
@@ -48,6 +46,7 @@ class Enrollee(db.Model):
     is_budgetary = sa.Column(sa.Boolean)
     original_or_copy = sa.Column(sa.Boolean, nullable=True)
     enrollment_consent = sa.Column(sa.String(500), nullable=True)
+    status = sa.Column(sa.Integer, nullable=True, default=enrollee_statuses.STATUS_NEW)
 
     def __init__(self, birthday=None, phone=None, birth_place=None, need_hostel=None, photo=None, agreement_scan=None,
                  is_budgetary=None, original_or_copy=None, enrollment_consent=None):
@@ -66,3 +65,6 @@ class Enrollee(db.Model):
 
     def __repr__(self):
         return self.__str__()
+
+
+

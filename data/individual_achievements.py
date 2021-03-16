@@ -7,14 +7,12 @@ from data.db_session import db
 from data.enrollee import Enrollee
 
 
-class IndividualAchievement(db.Model):
+class IndividualAchievement(db.Model, SerializerMixin):
     __tablename__ = "individual_achievement"
+    serialize_rules = ( '-enrolls', )
 
     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True, unique=True)
 
-    # Relationships
-    # enrollee = orm.relationship("Enrollee", back_populates="individual_achievement_list", uselist=False)
-    # enrolls = orm.relationship("Enrollee", secondary=association_table, back_populates="individual_achievement_list")
     enrolls = orm.relationship("Enrollee", secondary=Enrollee.association_table,
                                back_populates='individual_achievement_list')
 

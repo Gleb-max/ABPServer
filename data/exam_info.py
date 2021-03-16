@@ -7,13 +7,14 @@ from sqlalchemy import orm
 from data.db_session import db
 
 
-class ExamInfo(db.Model):
+class ExamInfo(db.Model, SerializerMixin):
     __tablename__ = "exam_info"
+    serialize_rules = ( '-enrollee', )
 
     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True, unique=True)
 
     # Relationships
-    enrollee_id = sa.Column(sa.Integer, sa.ForeignKey('enrollee.id'))
+    enrollee_id = sa.Column(sa.Integer, sa.ForeignKey('enrollee.id', ondelete='CASCADE'))
     enrollee = orm.relationship("Enrollee", back_populates="exam_data_list", uselist=True)
 
     name = sa.Column(sa.String(100), nullable=False)

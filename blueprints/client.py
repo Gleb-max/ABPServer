@@ -1,6 +1,7 @@
 import re
 import json
 
+from data import account_types
 from data.enrollee import Enrollee
 from data.exam_info import ExamInfo
 from data.passport import Passport
@@ -17,13 +18,22 @@ from datetime import datetime
 blueprint = Blueprint("clients_api", __name__, template_folder="templates")
 
 
-@blueprint.route("/client/restore/", methods=["POST"])
-def restore():  # восстановление пароля
-    phone = request.form.get("phone")
-    if not filling_all(phone):
-        return make_response(REQUIRED_FIELDS_NOT_FILLING, 400)
+@blueprint.route("/error/", methods=["GET", 'POST'])
+def show_errors():
+    if request.method == 'POST':
+        with open('errors.txt', 'a') as f:
+            f.write(request.form.get('error') + '<br>\n')
+        return make_response(RESULT_SUCCESS, 200)
 
-    return make_response({"result": "OK"}, 200)
+    with open('errors.txt', 'r') as f:
+        return f.read()
+
+
+@blueprint.route("/error/clean", methods=["GET", 'POST'])
+def clean_error_page():
+    with open('errors.txt', 'w') as f:
+        f.write('')
+    return make_response(RESULT_SUCCESS, 200)
 
 
 @blueprint.route("/client/registration/", methods=["POST"])
@@ -133,9 +143,10 @@ def add_enrollee_data():
             return make_response(EMAIL_INCORRECT, 400)
 
     user = User.query.filter_by(id=int(user_id)).first()
-
+    print('user', user)
     if not user:
-        return make_response(USER_NOT_FOUND, 400)
+        print('user not found')
+        return make_response(USER_NOT_FOUND, 401)
 
     try:
         # User model
@@ -251,9 +262,9 @@ def add_enrollee_data():
         check_field_and_set("certificate_number", school_certificate, certificate_number)
 
         if certificate_scan:
-            path = 'media/passports/' + str(user_id) + certificate_scan.filename
+            path = 'media/certificate_scans/' + str(user_id) + certificate_scan.filename
             certificate_scan.save(path)
-            check_field_and_set("certificate_scan", school_certificate, certificate_scan)
+            check_field_and_set("certificate_scan", school_certificate, path)
 
         user.enrollee.school_certificate = school_certificate
         db.session.commit()
@@ -275,16 +286,16 @@ def user_login():
 
     user = db.session.query(User).filter(User.email == email).first()
     if user == None:
+        print('user not found')
         return make_response(USER_NOT_FOUND, 401)
 
     if user.password == password:
-
-        answer = {"user_id": user.id, "user_name": user.name,
-                  "user_surname": user.surname, "user_last_name": user.last_name,
-                  "user_is_male": user.is_male, "user_email": user.email,
-                  "user_account_type": user.account_type}
-        db.session.close()
-        return make_response(json.dumps(answer), 200)
+        info = user.to_dict(rules=("-enrollee", ))
+        # info = {}
+        if user.account_type == account_types.ENROLL and user.enrollee:
+            info.update( user.enrollee.to_dict() )
+        print(info)
+        return make_response(json.dumps(info), 200)
     else:
         db.session.close()
         return make_response(FORM_INCORRECT, 401)

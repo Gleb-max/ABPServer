@@ -11,5 +11,6 @@ class Config(object):
     DEBUG = False
     TESTING = False
     CSRF_ENABLED = True
+    SECRET_KEY = 'secret'
     SQLALCHEMY_DATABASE_URI = DATABASE_URL if PRODUCTION else LOCAL_DATABASE_URL
     SQLALCHEMY_TRACK_MODIFICATIONS = False

@@ -1,0 +1,2 @@
+STATUS_NEW = 0
+
