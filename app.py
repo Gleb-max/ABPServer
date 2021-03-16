@@ -96,7 +96,8 @@ def get_rating_table():
         enrolls = Enrollee.query.filter(
             and_(
                 # заполнившие все поля
-                enrollee_statuses.WITHOUT_ORIGINAL <= Enrollee.status <= enrollee_statuses.WITH_ORIGINAL,
+                enrollee_statuses.WITHOUT_ORIGINAL <= Enrollee.status,
+                Enrollee.status <= enrollee_statuses.WITH_ORIGINAL,
                 # нужно ли общежитие
                 Enrollee.need_hostel in [need_hostel] if (need_hostel != None) else [True, False]
             )
@@ -105,7 +106,8 @@ def get_rating_table():
         enrolls = Enrollee.query.filter(
             and_(
                 # заполнившие все поля
-                enrollee_statuses.WITHOUT_ORIGINAL <= Enrollee.status <= enrollee_statuses.WITH_ORIGINAL,
+                enrollee_statuses.WITHOUT_ORIGINAL <= Enrollee.status,
+                Enrollee.status <= enrollee_statuses.WITH_ORIGINAL,
                 # факультет
                 Enrollee.study_direction_id == direction_id,
                 # нужно ли общежитие

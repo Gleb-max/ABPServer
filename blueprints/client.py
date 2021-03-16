@@ -474,7 +474,9 @@ def enroll_users():
     enrolls = Enrollee.query.filter(
         and_(
             # заполнившие все поля
-            enrollee_statuses.WITHOUT_ORIGINAL <= Enrollee.status <= enrollee_statuses.WITH_ORIGINAL,
+            enrollee_statuses.WITHOUT_ORIGINAL <= Enrollee.status,
+            Enrollee.status <= enrollee_statuses.WITH_ORIGINAL,
+
             Enrollee.study_direction_id == direction_id,
             (True if (need_original == None) else Enrollee.original_or_copy == need_original)
         )
