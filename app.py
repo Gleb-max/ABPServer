@@ -113,6 +113,8 @@ if __name__ == "__main__":
     # db.drop_all()
     db.create_all()
     db.session.commit()
+    print(Enrollee.query.first().id)
+    print(User.query.first().id)
 
     from document_creator import create_order_of_admission
     create_order_of_admission('test', Enrollee.query.all(), StudyDirection.query.first())

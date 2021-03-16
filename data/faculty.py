@@ -8,6 +8,7 @@ from data.db_session import db
 
 class Faculty(db.Model, SerializerMixin):
     __tablename__ = "faculty"
+    serialize_rules = ('-directions',)
 
     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True, unique=True)
 
