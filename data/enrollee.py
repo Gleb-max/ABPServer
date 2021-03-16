@@ -4,7 +4,6 @@ from sqlalchemy_serializer import SerializerMixin
 
 from sqlalchemy import orm, MetaData
 from data.db_session import db
-from data.db_session import association_table
 
 
 class Enrollee(db.Model):
@@ -22,6 +21,13 @@ class Enrollee(db.Model):
     study_direction = orm.relationship("StudyDirection", back_populates='enrolls')
 
 
+    association_table = sa.Table('association', db.metadata,
+                                 sa.Column('enrollee_id', sa.Integer, sa.ForeignKey('enrollee.id')),
+                                 sa.Column('individual_achievement_id', sa.Integer, sa.ForeignKey('individual_achievement.id'))
+                                 )
+    individual_achievement_list = orm.relationship("IndividualAchievement",
+                                                   secondary=association_table,
+                                                   back_populates='enrolls')
     # Individual achievement
     # individual_achievement_id = sa.Column(sa.Integer, sa.ForeignKey('individual_achievement.id'))
     # individual_achievement_list = orm.relationship("IndividualAchievement", back_populates="enrollee")
@@ -31,7 +37,6 @@ class Enrollee(db.Model):
 
     # Exam data
     exam_data_list = orm.relationship("ExamInfo", back_populates="enrollee", uselist=True)
-
 
     # Common information
     birthday = sa.Column(sa.Date, nullable=True)
@@ -55,7 +60,6 @@ class Enrollee(db.Model):
         self.is_budgetary = is_budgetary
         self.original_or_copy = original_or_copy
         self.enrollment_consent = enrollment_consent
-        # TODO photo uploading
 
     def __str__(self):
         return f"<Enrollee>"

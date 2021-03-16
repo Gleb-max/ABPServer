@@ -39,6 +39,10 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 # register blueprint for mobile and desktop clients
 app.register_blueprint(client.blueprint)
+
+if os.getenv('NEED_DROP_DB', False).lower() in ['true', '1']:
+    db.drop_all()
+
 db.create_all()
 db.session.commit()
 
@@ -59,6 +63,7 @@ if __name__ == "__main__":
     admin.add_view(ModelView(school_certificate.SchoolCertificate, db.session))
     admin.add_view(ModelView(study_direction.StudyDirection, db.session))
     admin.add_view(ModelView(exam_info.ExamInfo, db.session))
+    admin.add_view(ModelView(individual_achievements.IndividualAchievement, db.session))
 
     app.secret_key = 'secret'
     app.config['SESSION_TYPE'] = 'filesystem'
