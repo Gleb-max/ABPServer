@@ -410,6 +410,7 @@ def enrollee_confirm_form():
 def enrollee_revision_form():
     enrollee_id = request.form.get('enrollee_id')
     incorrect_fields = request.form.get('incorrect_fields')
+    print(incorrect_fields, enrollee_id)
     incorrect_fields = json.loads(incorrect_fields).get('fields')
 
     if enrollee_id.isdigit():
