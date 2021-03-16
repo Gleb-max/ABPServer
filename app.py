@@ -1,7 +1,11 @@
+import json
+
 from flask_admin.contrib.sqla import ModelView
+from sqlalchemy import func
+
 from data.__all_models import *
 from blueprints import client
-from flask import Flask, render_template, redirect, abort, url_for, send_from_directory, request
+from flask import Flask, render_template, redirect, abort, url_for, send_from_directory, request, make_response
 from flask_login import LoginManager, login_required, logout_user
 from flask_admin import Admin
 from data.db_session import app, db
@@ -63,6 +67,30 @@ def enrollee_form_confirm(path):
     return send_from_directory(filename=path, directory=os.path.abspath(os.getcwd()))
 
 
+@app.route('/get_rating_table', methods=['POST'])
+def get_rating_table():
+    direction_id = request.form.get('direction_id')
+    need_hostel = request.form.get('need_hostel')
+
+    enrolls = []
+    print(direction_id, need_hostel)
+
+    if need_hostel == 'true':
+        enrolls = Enrollee.query.filter_by(need_hostel=True).order_by(Enrollee.get_total_grade).all()
+    elif int(direction_id) < 0:  # Весь ВУЗ
+        from sqlalchemy import desc
+        enrolls = Enrollee.query.order_by(Enrollee.get_total_grade).all()
+    elif int(direction_id) > 0:  # По Факультетам
+        enrolls = Enrollee.query.filter_by(study_direction_id=direction_id).order_by(Enrollee.get_total_grade).all()
+    else:
+        return make_response({'result': 'Incorrect request params'}, 400)
+
+    ans = []
+    for enr in enrolls:
+        ans.append(enr.to_dict(only=('get_exam_total_grade', 'get_individual_grade', 'original_or_copy')))
+    return make_response(json.dumps({'table': ans}), 200)
+
+
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 
@@ -78,7 +106,6 @@ initAdmin()
 # add resources
 api = Api(app)
 api.add_resource(EnrollsList, "/api/v2/enrolls")
-
 
 if __name__ == "__main__":
     # db.drop_all()

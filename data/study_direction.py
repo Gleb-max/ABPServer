@@ -17,5 +17,6 @@ class StudyDirection(db.Model, SerializerMixin):
     enrolls = orm.relationship("Enrollee", back_populates="study_direction")
 
     name = sa.Column(sa.String(100), nullable=False)
+    # budget_count = sa.Column(sa.SmallInteger(), nullable=True)
     description = sa.Column(sa.Text, nullable=True)
 

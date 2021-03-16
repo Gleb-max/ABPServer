@@ -1,10 +1,12 @@
 import sqlalchemy as sa
 from flask_login import UserMixin
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy_serializer import SerializerMixin
 
-from sqlalchemy import orm
+from sqlalchemy import orm, select, func
 from data.db_session import db
 from data import enrollee_statuses
+from sqlalchemy import case
 
 
 class Enrollee(db.Model, SerializerMixin):
@@ -65,5 +67,25 @@ class Enrollee(db.Model, SerializerMixin):
     def __repr__(self):
         return self.__str__()
 
+    def get_individual_grade(self):
+        total = 0
+        for achievement in self.individual_achievement_list:
+            total += achievement.additional_score
+        return min(10, total)
+
+    def get_exam_total_grade(self):
+        total = 0
+        for subject in self.exam_data_list:
+            total += subject.grade
+        return total
+
+    @hybrid_property
+    def get_total_grade(self):
+        return self.get_exam_total_grade() + self.get_individual_grade()
+
+    @get_total_grade.expression
+    def get_total_grade(cls):
+        return (select([func.count(Enrollee.id)])
+                .where(Enrollee.id == cls.id))
 
 
