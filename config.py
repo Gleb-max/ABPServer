@@ -1,5 +1,13 @@
 import os
 
+# Почта
+# MAIL_PASSWORD = 'limonadov'
+# MAIL_LOGIN = 'SGU-lim@yandex.ru'
+
+
+MAIL_PASSWORD = 'limonadov'
+MAIL_LOGIN = 'SGU.im.limonadov@gmail.com'
+
 PRODUCTION = os.getenv('PRODUCTION')
 
 PORT = int(os.environ.get("PORT", 5000))

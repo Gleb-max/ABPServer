@@ -1,6 +1,7 @@
 import re
 import json
 
+from config import MAIL_PASSWORD, MAIL_LOGIN
 from data import account_types
 from data.enrollee import Enrollee
 from data.exam_info import ExamInfo
@@ -16,6 +17,8 @@ from utils import filling_all
 from data.db_session import db
 from datetime import datetime
 from data import enrollee_statuses
+import smtplib as smtp
+from email.mime.text import MIMEText
 
 blueprint = Blueprint("clients_api", __name__, template_folder="templates")
 
@@ -350,6 +353,31 @@ def user_login():
         return make_response(FORM_INCORRECT, 401)
 
 
+def send_mail(receiver, header, text):
+    msg = MIMEText(text)
+    msg['Subject'] = header
+    msg['From'] = MAIL_LOGIN
+    msg['To'] = receiver
+
+    # Yandex mail
+    # server = smtp.SMTP_SSL('smtp.yandex.com')
+    # server.set_debuglevel(1)
+    # server.ehlo(MAIL_LOGIN)
+    # server.login(MAIL_LOGIN, MAIL_PASSWORD)
+    # server.auth_plain()
+    # server.sendmail(MAIL_LOGIN, receiver, msg)
+    # server.quit()
+
+    # Google mail
+    smtp_server = 'smtp.gmail.com'
+    s = smtp.SMTP(smtp_server)
+    s.starttls()
+    s.login(MAIL_LOGIN, MAIL_PASSWORD)
+    s.sendmail(MAIL_LOGIN, ['nick-mozg1@mail.ru'], msg.as_string())
+    s.quit()
+    print(f'mail to {receiver} sended')
+
+
 @blueprint.route('/client/confirm_form', methods=['POST'])
 def enrollee_confirm_form():
     enrollee_id = request.form.get('enrollee_id')
@@ -358,6 +386,12 @@ def enrollee_confirm_form():
         if enrollee:
             enrollee.consideration_stage = enrollee_statuses.STAGE_RECEIVED
             db.session.commit()
+            send_mail(enrollee.user.email, 'СГУ им. Лимонадова',
+                      'Добрый день!\n\nУведомляем вас, что вы успешно подали документы в '
+                      'Сызранский государственный университет имени Филиппа Лимонадова. '
+                      'С этого момента вы участвуете в конкурсе на зачисление.\n\nС уважением,\n'
+                      'приемная комиссия СГУ им. Ф.Лимонадова'
+                      )
             return make_response(RESULT_SUCCESS, 200)
         else:
             return make_response(ENROLLEE_NOT_FOUND, 404)
@@ -373,6 +407,17 @@ def enrollee_revision_form():
         if enrollee:
             enrollee.consideration_stage = enrollee_statuses.STAGE_FOR_REVISION
             db.session.commit()
+
+            send_mail(enrollee.user.email, 'СГУ им. Лимонадова',
+                      'Добрый день!\n\n'
+                      'Уведомляем вас, что при подаче документов в '
+                      'Сызранский государственный университет имени Филиппа Лимонадова '
+                      'вы допустили ошибки.\n\n'
+                      'Просим исправить ошибки в ближайшее время.\n\n'
+                      'С уважением,\n'
+                      'приемная комиссия СГУ им. Ф.Лимонадова'
+                      )
+
             return make_response(RESULT_SUCCESS, 200)
         else:
             return make_response(ENROLLEE_NOT_FOUND, 404)
