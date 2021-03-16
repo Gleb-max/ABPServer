@@ -6,6 +6,7 @@ from flask_login import LoginManager, login_required, logout_user
 from flask_admin import Admin
 from data.db_session import app, db
 from config import *
+from flask_restful import Api
 import logging
 
 from data.enrollee import Enrollee
@@ -57,9 +58,6 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 # register blueprint for mobile and desktop clients
 app.register_blueprint(client.blueprint)
 
-if os.getenv('NEED_DROP_DB', 'False').lower() in ['true', '1']:
-    print('dropping db ...')
-
 print('Creating tables...')
 db.create_all()
 db.session.commit()
@@ -67,15 +65,12 @@ print('Initializing admin panel...')
 initAdmin()
 
 # add resources
+api = Api(app)
 # api.add_resource(ReceiptsListResource, "/api/v2/receipts")
 
 
 if __name__ == "__main__":
-    # print(StudyDirection.query.first().enrollee)
     # db.drop_all()
-    import json
-    user = User.query.first()
-    info = user.to_dict(rules=("-enrollee",))
     db.create_all()
     db.session.commit()
     print('DB was created')

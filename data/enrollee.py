@@ -44,7 +44,7 @@ class Enrollee(db.Model, SerializerMixin):
     is_budgetary = sa.Column(sa.Boolean)
     original_or_copy = sa.Column(sa.Boolean, nullable=True)
     enrollment_consent = sa.Column(sa.String(500), nullable=True)
-    status = sa.Column(sa.Integer, nullable=True, default=enrollee_statuses.STATUS_NEW)
+    status = sa.Column(sa.Integer, nullable=True, default=enrollee_statuses.NEW)
 
     def __init__(self, birthday=None, phone=None, birth_place=None, need_hostel=None, photo=None, agreement_scan=None,
                  is_budgetary=None, original_or_copy=None, enrollment_consent=None):

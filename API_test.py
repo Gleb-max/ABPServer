@@ -8,8 +8,8 @@ files = {
     'passport_scan': open('test_img.jpg', 'rb'),
     'certificate_scan': open('test_img.jpg', 'rb'),
     'enrollment_consent': open('test_img.jpg', 'rb'),
+    'agreement_scan': open('test_img.jpg', 'rb'),
 }
-
 
 body = {
     'user_id': '1',
@@ -33,11 +33,9 @@ body = {
     'certificate_number': '123123321',
     'is_budgetary': 'true',
     'original_or_copy': 'true',
+    'individual_achievements': json.dumps({'indexes': [1, 2, 3]})
 }
 
-headers = {
-    'authorization': "Bearer {token}"
-}
 response = requests.request("POST", url, data=body, files=files)
 
 print(response.text)

@@ -5,6 +5,7 @@ from sqlalchemy_serializer import SerializerMixin
 
 from sqlalchemy import orm
 from data.db_session import db
+from data.enrollee import Enrollee
 
 
 class User(db.Model, SerializerMixin):
@@ -33,6 +34,9 @@ class User(db.Model, SerializerMixin):
         self.email = email
         self.password = password
         self.account_type = account_type
+        self.enrollee = Enrollee()
+        db.session.add(self.enrollee)
+        db.session.commit()
 
     def __str__(self):
         return f"<{self.name} {self.surname} {self.last_name}>"

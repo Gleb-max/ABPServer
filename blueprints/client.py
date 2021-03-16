@@ -4,6 +4,7 @@ import json
 from data import account_types
 from data.enrollee import Enrollee
 from data.exam_info import ExamInfo
+from data.individual_achievements import IndividualAchievement
 from data.passport import Passport
 from data.school_certificate import SchoolCertificate
 from data.study_direction import StudyDirection
@@ -14,6 +15,7 @@ from flask import jsonify, Blueprint, make_response, request
 from utils import filling_all
 from data.db_session import db
 from datetime import datetime
+from data import enrollee_statuses
 
 blueprint = Blueprint("clients_api", __name__, template_folder="templates")
 
@@ -93,6 +95,36 @@ def convert_str_to_datetime(string):
     return datetime.strptime(string, '%d.%m.%Y')
 
 
+def update_enrollee_state(e: Enrollee):
+    need_employee_data = [e.photo, e.exam_data_list, e.study_direction, e.individual_achievement_list,
+                          e.exam_data_list, e.birthday, e.phone, e.birth_place,
+                          e.need_hostel, e.photo, e.agreement_scan, e.is_budgetary,
+                          e.original_or_copy,
+                          e.enrollment_consent
+                          ]
+
+    need_passport_data = [
+        e.passport.series, e.passport.number, e.passport.who_issued, e.passport.department_code,
+        e.passport.when_issued, e.passport.passport_scan, e.passport.registration_address
+    ]
+
+    need_certification_data = [e.school_certificate.certificate_scan, e.school_certificate.certificate_number]
+    need_data = need_certification_data + need_passport_data + need_employee_data
+    without_original_need = need_data.copy()
+    without_original_need.remove(e.enrollment_consent)
+    without_original_need.remove(e.original_or_copy)
+
+    if not any(need_data):  # данные не внесены
+        e.status = enrollee_statuses.NEW
+    elif all(without_original_need) and (not e.enrollment_consent or not e.original_or_copy):
+        e.status = enrollee_statuses.WITHOUT_ORIGINAL
+    elif all(need_data):
+        e.status = enrollee_statuses.WITH_ORIGINAL
+    else:
+        e.status = enrollee_statuses.IN_PROCESS
+    db.session.commit()
+
+
 @blueprint.route("/client/add/enrolleeData/", methods=["POST"])
 def add_enrollee_data():
     user_id = request.form.get("user_id")
@@ -108,6 +140,7 @@ def add_enrollee_data():
     birth_place = request.form.get("birth_place")
     need_hostel = request.form.get("need_hostel")
     photo = request.files.get('photo')
+    agreement_scan = request.files.get('agreement_scan')
 
     # passport
     passport_series = request.form.get("passport_series")
@@ -143,7 +176,6 @@ def add_enrollee_data():
             return make_response(EMAIL_INCORRECT, 400)
 
     user = User.query.filter_by(id=int(user_id)).first()
-    print('user', user)
     if not user:
         print('user not found')
         return make_response(USER_NOT_FOUND, 401)
@@ -187,14 +219,18 @@ def add_enrollee_data():
             photo.save(path)
             check_field_and_set("photo", enrollee, path)
 
+        if agreement_scan:
+            path = 'media/agreement_scans/' + str(user_id) + agreement_scan.filename
+            agreement_scan.save(path)
+            check_field_and_set("agreement_scan", enrollee, path)
+
         if enrollment_consent:
             path = 'media/consents/' + str(user_id) + enrollment_consent.filename
             enrollment_consent.save(path)
-            check_field_and_set("enrollment_consent", enrollee, enrollment_consent.read())
+            check_field_and_set("enrollment_consent", enrollee, path)
 
         if study_direction_id:
             direction = StudyDirection.query.filter_by(id=int(study_direction_id)).first()
-            print("selected direction", direction)
             if not direction:
                 return make_response(DIRECTION_NOT_FOUND, 400)
 
@@ -205,12 +241,11 @@ def add_enrollee_data():
             enrollee.exam_data_list = []
             for item in exams.get('items'):
                 for sub_name, grade in item.items():
-                    print(sub_name, grade)
                     exam_info = ExamInfo(sub_name, int(grade))
                     db.session.add(exam_info)
                     enrollee.exam_data_list.append(exam_info)
                     db.session.commit()
-            print(enrollee.exam_data_list)
+
 
         user.enrollee = enrollee
         db.session.commit()
@@ -244,7 +279,7 @@ def add_enrollee_data():
         if passport_scan:
             path = 'media/passports/' + str(user_id) + passport_scan.filename
             passport_scan.save(path)
-            check_field_and_set("scan", passport, passport_scan.read())
+            check_field_and_set("passport_scan", passport, path)
 
         user.enrollee.passport = passport
         db.session.commit()
@@ -269,6 +304,16 @@ def add_enrollee_data():
         user.enrollee.school_certificate = school_certificate
         db.session.commit()
 
+        if individual_achievements:
+            ach_indexes = json.loads(individual_achievements)['indexes']
+            for i in ach_indexes:
+                ach = IndividualAchievement.query.filter_by(id=i).first()
+                if ach != None:
+                    user.enrollee.individual_achievement_list.append(ach)
+                    db.session.commit()
+
+        update_enrollee_state(user.enrollee)
+
     except Exception as e:
         print(f"Register user error: {e}")
         return make_response(INTERNAL_ERROR, 500)
@@ -290,11 +335,11 @@ def user_login():
         return make_response(USER_NOT_FOUND, 401)
 
     if user.password == password:
-        info = user.to_dict(rules=("-enrollee", ))
-        # info = {}
+        info = user.to_dict(rules=("-enrollee",))
+
         if user.account_type == account_types.ENROLL and user.enrollee:
-            info.update( user.enrollee.to_dict() )
-        print(info)
+            info.update(user.enrollee.to_dict())
+
         return make_response(json.dumps(info), 200)
     else:
         db.session.close()
