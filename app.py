@@ -1,7 +1,7 @@
 from flask_admin.contrib.sqla import ModelView
 from data.__all_models import *
 from blueprints import client
-from flask import Flask, render_template, redirect, abort, url_for
+from flask import Flask, render_template, redirect, abort, url_for, send_from_directory, request
 from flask_login import LoginManager, login_required, logout_user
 from flask_admin import Admin
 from data.db_session import app, db
@@ -13,6 +13,7 @@ from data.enrollee import Enrollee
 from data.exam_info import ExamInfo
 from data.study_direction import StudyDirection
 from data.user import User
+from resources.receipts import EnrollsList
 
 
 def initAdmin():
@@ -52,6 +53,16 @@ def policy():
     return render_template("policy.html", title="Политика конфиденциальности")
 
 
+@app.route('/get_file/<path:path>', methods=['GET'])
+def download(path):
+    return send_from_directory(filename=path, directory=os.path.abspath(os.getcwd()))
+
+
+@app.route('/confirm_form', methods=['GET'])
+def enrollee_form_confirm(path):
+    return send_from_directory(filename=path, directory=os.path.abspath(os.getcwd()))
+
+
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 
@@ -66,7 +77,7 @@ initAdmin()
 
 # add resources
 api = Api(app)
-# api.add_resource(ReceiptsListResource, "/api/v2/receipts")
+api.add_resource(EnrollsList, "/api/v2/enrolls")
 
 
 if __name__ == "__main__":

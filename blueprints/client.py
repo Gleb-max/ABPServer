@@ -116,12 +116,17 @@ def update_enrollee_state(e: Enrollee):
 
     if not any(need_data):  # данные не внесены
         e.status = enrollee_statuses.NEW
+        e.consideration_stage = enrollee_statuses.STAGE_NEW
     elif all(without_original_need) and (not e.enrollment_consent or not e.original_or_copy):
         e.status = enrollee_statuses.WITHOUT_ORIGINAL
+        e.consideration_stage = enrollee_statuses.STAGE_NEW
     elif all(need_data):
         e.status = enrollee_statuses.WITH_ORIGINAL
+        e.consideration_stage = enrollee_statuses.STAGE_UNDER_OBSERVE
     else:
         e.status = enrollee_statuses.IN_PROCESS
+        e.consideration_stage = enrollee_statuses.STAGE_NEW
+
     db.session.commit()
 
 
@@ -246,7 +251,6 @@ def add_enrollee_data():
                     enrollee.exam_data_list.append(exam_info)
                     db.session.commit()
 
-
         user.enrollee = enrollee
         db.session.commit()
 
@@ -344,6 +348,36 @@ def user_login():
     else:
         db.session.close()
         return make_response(FORM_INCORRECT, 401)
+
+
+@blueprint.route('/client/confirm_form', methods=['POST'])
+def enrollee_confirm_form():
+    enrollee_id = request.form.get('enrollee_id')
+    if enrollee_id.isdigit():
+        enrollee = Enrollee.query.filter_by(id=int(enrollee_id)).first()
+        if enrollee:
+            enrollee.consideration_stage = enrollee_statuses.STAGE_RECEIVED
+            db.session.commit()
+            return make_response(RESULT_SUCCESS, 200)
+        else:
+            return make_response(ENROLLEE_NOT_FOUND, 404)
+
+    return make_response(FORM_INCORRECT, 400)
+
+
+@blueprint.route('/client/revision_form', methods=['POST'])
+def enrollee_revision_form():
+    enrollee_id = request.form.get('enrollee_id')
+    if enrollee_id.isdigit():
+        enrollee = Enrollee.query.filter_by(id=int(enrollee_id)).first()
+        if enrollee:
+            enrollee.consideration_stage = enrollee_statuses.STAGE_FOR_REVISION
+            db.session.commit()
+            return make_response(RESULT_SUCCESS, 200)
+        else:
+            return make_response(ENROLLEE_NOT_FOUND, 404)
+
+    return make_response(FORM_INCORRECT, 400)
 
 
 @blueprint.errorhandler(404)

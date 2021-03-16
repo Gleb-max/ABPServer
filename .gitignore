@@ -4,4 +4,4 @@ venv
 .idea
 __pycache__
 test_img.jpg
-
+*.pdf
