@@ -3,13 +3,15 @@ import json
 
 from transliterate import slugify
 
-from config import MAIL_PASSWORD, MAIL_LOGIN
+from blueprints.utils import get_abbreviation, enroll_student
+
 from data import account_types
 from data.enrollee import Enrollee
 from data.exam_info import ExamInfo
 from data.individual_achievements import IndividualAchievement
 from data.passport import Passport
 from data.school_certificate import SchoolCertificate
+from data.student import Student
 from data.study_direction import StudyDirection
 from data.user import User
 from blueprints.constants import *
@@ -21,8 +23,7 @@ from utils import filling_all
 from data.db_session import db
 from datetime import datetime
 from data import enrollee_statuses
-import smtplib as smtp
-from email.mime.text import MIMEText
+from blueprints.utils import send_mail
 
 blueprint = Blueprint("clients_api", __name__, template_folder="templates")
 
@@ -99,7 +100,7 @@ def convert_bool_str_to_bool(string):
 
 def convert_str_to_datetime(string):
     # date_time_example = '29.06.2020'
-    return datetime.strptime(string, '%d.%m.%Y')
+    return datetime.strptime(string, '%d-%m-%Y')
 
 
 def update_enrollee_state(e: Enrollee):
@@ -371,32 +372,6 @@ def user_login():
         return make_response(FORM_INCORRECT, 401)
 
 
-def send_mail(receiver, header, text):
-    msg = MIMEText(text)
-    msg['Subject'] = header
-    msg['From'] = MAIL_LOGIN
-    msg['To'] = receiver
-
-    # Yandex mail
-    # server = smtp.SMTP_SSL('smtp.yandex.com', port=465)
-    # server.set_debuglevel(1)
-    # server.ehlo(MAIL_LOGIN)
-    # server.login(MAIL_LOGIN, MAIL_PASSWORD)
-    # server.auth_plain()
-    # print('sending...')
-    # server.sendmail(MAIL_LOGIN, [receiver], msg.as_string())
-    # server.quit()
-
-    # Google mail
-    smtp_server = 'smtp.gmail.com'
-    s = smtp.SMTP(smtp_server)
-    s.starttls()
-    s.login(MAIL_LOGIN, MAIL_PASSWORD)
-    s.sendmail(MAIL_LOGIN, receiver, msg.as_string())
-    s.quit()
-    print(f'mail to {receiver} sended')
-
-
 @blueprint.route('/client/revision_form', methods=['POST'])
 def enrollee_revision_form():
     enrollee_id = request.form.get('enrollee_id')
@@ -451,22 +426,6 @@ def enrollee_confirm_form():
     return make_response(FORM_INCORRECT, 400)
 
 
-def enroll_student(enrollee: Enrollee, is_budget=False):
-    enrollee.consideration_stage = enrollee_statuses.STAGE_RECEIVED
-    db.session.commit()
-    user = enrollee.user
-    budget_text = 'бюджет' if is_budget else 'платно'
-    send_mail(enrollee.user.email, 'СГУ им. Лимонадова',
-              f'Добрый день, {user.surname} {user.name} {user.last_name}!\n\n ' + \
-              f'Поздравляем!!!\n\n' + \
-              f'Вы поступили в Сызранский государственный университет имени Филиппа Лимонадова.\n' + \
-              f'Направление: {enrollee.study_direction.name}.\n' + \
-              f'Форма: {budget_text}.\n\n' + \
-              f'С уважением,\n' + \
-              f'приемная комиссия СГУ им. Ф.Лимонадова'
-              )
-
-
 @blueprint.route('/client/enroll_users', methods=['POST'])
 def enroll_users():
     # Формирование списков на зачисление
@@ -477,12 +436,6 @@ def enroll_users():
     if not direction:
         return make_response(FORM_INCORRECT, 400)
 
-    # if need_original == None:
-    #     pass
-    # elif need_original.lower() == 'true':
-    #     need_original = True
-    # else:
-    #     need_original = False
     need_original = True  # По критериям
 
     from sqlalchemy import and_
@@ -496,11 +449,7 @@ def enroll_users():
         )
     ).all()
 
-    for en in Enrollee.query.all():
-        print(en.consideration_stage, enrollee_statuses.STAGE_RECEIVED)
-        print(en.study_direction_id, direction.id)
-        print(en.original_or_copy)
-        print()
+    group_number = f'{get_abbreviation(direction.name)}{datetime.now().year}'
 
     enrolls.sort(key=lambda x: x.get_exam_total_grade(), reverse=True)
     print('to table:', enrolls)
@@ -509,18 +458,19 @@ def enroll_users():
     # Зачислить бюджетников
     while i < direction.budget_count:
         if i < len(enrolls):
-            enroll_student(enrolls[i], is_budget=True)
+            enroll_student(enrolls[i], is_budget=True, group_number=group_number)
             enrolled_users.append(enrolls[i])
         print(i)
         i += 1
 
     # Зачислить платников
     for j in range(i, len(enrolls)):
-        enroll_student(enrolls[j], is_budget=False)
+        enroll_student(enrolls[j], is_budget=False, group_number=group_number)
         enrolled_users.append(enrolls[i])
-    print(enrolled_users)
-    print('Generating report...')
-    file_path = create_order_of_admission(f'media/commands/{slugify(direction.name)}', enrolled_users, direction)
+
+    print('Usert to enroll:', enrolled_users, '\ngenerating report...')
+    file_path = create_order_of_admission(f'media/commands/{slugify(direction.name)}', enrolled_users, direction,
+                                          group_number)
 
     return make_response(json.dumps({'file_url': file_path}), 200)
 

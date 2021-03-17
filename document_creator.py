@@ -8,13 +8,7 @@ from data.study_direction import StudyDirection
 from datetime import datetime
 
 
-def get_abbreviation(word_string):
-    arr = word_string.split()
-    arr = map(lambda x: x[0], arr)
-    return (''.join(arr)).upper()
-
-
-def create_order_of_admission(filename, enrolls: List[Enrollee], direction: StudyDirection):
+def create_order_of_admission(filename, enrolls: List[Enrollee], direction: StudyDirection, group_number):
     document = Document()
 
     upper = document.add_paragraph('Федеральное государственное бюджетное образовательное учреждение\n'
@@ -30,7 +24,7 @@ def create_order_of_admission(filename, enrolls: List[Enrollee], direction: Stud
 
     paragraph = document.add_paragraph(f'Факультет “{direction.faculty.name}”\n '
                                        f'Направление “{direction.name}”\n'
-                                       f'Номер группы присвоить “{get_abbreviation(direction.name)}{datetime.now().year}”\n')
+                                       f'Номер группы присвоить “{group_number}”\n')
     paragraph.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
     table = document.add_table(rows=len(enrolls) + 1, cols=4, style='Table Grid')

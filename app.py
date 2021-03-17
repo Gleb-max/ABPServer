@@ -4,7 +4,7 @@ from flask_admin.contrib.sqla import ModelView
 from sqlalchemy import func, and_, case
 
 from admin.admin import ViewWithPK
-from data import faculty, enrollee_statuses
+from data import faculty, enrollee_statuses, student
 from data.__all_models import *
 from blueprints import client
 from flask import Flask, render_template, redirect, abort, url_for, send_from_directory, request, make_response
@@ -30,6 +30,7 @@ def initAdmin():
     admin = Admin(app, name='Admin', template_mode='bootstrap3')
     admin.add_view(ViewWithPK(user.User, db.session))
     admin.add_view(ViewWithPK(enrollee.Enrollee, db.session))
+    admin.add_view(ViewWithPK(student.Student, db.session))
     admin.add_view(ModelView(passport.Passport, db.session))
     admin.add_view(ModelView(school_certificate.SchoolCertificate, db.session))
     admin.add_view(ModelView(study_direction.StudyDirection, db.session))
@@ -63,7 +64,7 @@ def policy():
 
 @app.route('/get_file/<path:path>', methods=['GET'])
 def download(path):
-    return send_from_directory(filename=path, directory=os.path.abspath(os.getcwd()), cache_timeout=-1)
+    return send_from_directory(filename=path, directory=os.path.abspath(os.getcwd()), cache_timeout=None)
 
 
 @app.route('/confirm_form', methods=['GET'])
@@ -151,6 +152,9 @@ if __name__ == "__main__":
     #     db.session.add(user)
     #     db.session.commit()
     # db.session.close()
+    from blueprints.utils import enroll_student
+    abitr = Enrollee.query.all()[1]
+    enroll_student(abitr, is_budget=True, group_number='АИ2035')
     db.create_all()
     db.session.commit()
 

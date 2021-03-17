@@ -24,4 +24,5 @@ class Passport(db.Model, SerializerMixin):
     when_issued = sa.Column(sa.Date, nullable=True)
     passport_scan = sa.Column(sa.String(300), nullable=True)
     registration_address = sa.Column(sa.Text, nullable=True)
+    residence_address = sa.Column(sa.Text, nullable=True)
 
