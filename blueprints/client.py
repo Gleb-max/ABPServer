@@ -492,12 +492,12 @@ def enroll_users():
         and_(
             # прошедшие проверку
             Enrollee.consideration_stage == enrollee_statuses.STAGE_RECEIVED,
-
             Enrollee.study_direction_id == direction_id,
             (True if (need_original == None) else Enrollee.original_or_copy == need_original)
         )
-    ).order_by(Enrollee.get_total_grade_exp).all()
-    print(enrolls)
+    ).all()
+    enrolls.sort(key=lambda x: x.get_exam_total_grade(), reverse=True)
+    print('to table:', enrolls)
     i = 0
     enrolled_users = []
     # Зачислить бюджетников
