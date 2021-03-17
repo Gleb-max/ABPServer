@@ -520,7 +520,7 @@ def enroll_users():
     for j in range(i, len(enrolls)):
         enroll_student(enrolls[j], is_budget=False)
         enrolled_users.append(enrolls[i])
-
+    print(enrolled_users)
     print('Generating report...')
     file_path = create_order_of_admission(f'media/commands/{slugify(direction.name)}', enrolled_users, direction)
 

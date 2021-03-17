@@ -40,6 +40,7 @@ def create_order_of_admission(filename, enrolls: List[Enrollee], direction: Stud
     table.cell(0, 3).text = 'Баллы'
 
     for row_num, enroll in enumerate(enrolls, 1):
+        print(f'{enroll.user.name} was written to table')
         table.cell(row_num, 0).text = str(row_num)
         table.cell(row_num, 1).text = f'{enroll.user.name} {enroll.user.surname} {enroll.user.last_name}'
         table.cell(row_num, 2).text = 'бюджет' if enroll.is_budgetary else 'платная'
