@@ -9,4 +9,6 @@ app = Flask(__name__, static_folder="static")
 app.config.from_object(Config)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db, render_as_batch=True)
+db.create_all()
+db.session.commit()
 

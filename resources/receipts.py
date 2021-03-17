@@ -54,7 +54,7 @@ class StudentsList(Resource):
             #     Student.user.enrollee.direction_id == direction_id)
             # ).all()
         else:
-            data = Student.query.all()
+            data = db.session.query(User).join(Student).join(Enrollee).all()
 
         for user in data:
             user_dict = user.to_dict()

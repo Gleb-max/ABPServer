@@ -6,6 +6,9 @@ from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy import orm, select, func
 from data.db_session import db
 from data import enrollee_statuses
+from data.passport import Passport
+from data.school_certificate import SchoolCertificate
+from data.exam_info import ExamInfo
 from sqlalchemy import case
 
 
@@ -14,28 +17,8 @@ class Enrollee(db.Model, SerializerMixin):
     serialize_rules = ('-user',)
     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True, unique=True)
 
-    # Relationships
-    user_id = sa.Column(sa.Integer, sa.ForeignKey('users.id', ondelete='CASCADE'))
-    user = orm.relationship("User", back_populates="enrollee")
-
-    passport = orm.relationship("Passport", uselist=False, back_populates="enrollee", cascade="all,delete")
-    school_certificate = orm.relationship("SchoolCertificate", uselist=False, back_populates="enrollee",
-                                          cascade="all,delete")
-
-    study_direction_id = sa.Column(sa.Integer, sa.ForeignKey('study_direction.id', ondelete='CASCADE'))
-    study_direction = orm.relationship("StudyDirection", back_populates='enrolls')
-
-    association_table = sa.Table('association', db.metadata,
-                                 sa.Column('enrollee_id', sa.Integer, sa.ForeignKey('enrollee.id', ondelete='CASCADE')),
-                                 sa.Column('individual_achievement_id', sa.Integer,
-                                           sa.ForeignKey('individual_achievement.id', ondelete='CASCADE'))
-                                 )
-    individual_achievement_list = orm.relationship("IndividualAchievement",
-                                                   secondary=association_table,
-                                                   back_populates='enrolls', cascade="all,delete")
-
     # Exam data
-    exam_data_list = orm.relationship("ExamInfo", back_populates="enrollee", uselist=True, cascade="all,delete")
+    exam_data_list = orm.relationship(ExamInfo, back_populates="enrollee", uselist=True, cascade="all,delete")
 
     # Common information
     birthday = sa.Column(sa.Date, nullable=True)
@@ -49,6 +32,26 @@ class Enrollee(db.Model, SerializerMixin):
     enrollment_consent = sa.Column(sa.String(500), nullable=True)
     status = sa.Column(sa.Integer, nullable=True, default=enrollee_statuses.NEW)
     consideration_stage = sa.Column(sa.Integer, nullable=True, default=enrollee_statuses.NEW)
+
+    # Relationships
+    user_id = sa.Column(sa.Integer, sa.ForeignKey('users.id', ondelete='CASCADE'))
+    user = orm.relationship("User", back_populates="enrollee")
+
+    passport = orm.relationship(Passport, uselist=False, back_populates="enrollee", cascade="all,delete")
+    school_certificate = orm.relationship(SchoolCertificate, uselist=False, back_populates="enrollee",
+                                          cascade="all,delete")
+
+    study_direction_id = sa.Column(sa.Integer, sa.ForeignKey('study_direction.id', ondelete='CASCADE'))
+    study_direction = orm.relationship("StudyDirection", back_populates='enrolls')
+
+    association_table = sa.Table('association', db.metadata,
+                                 sa.Column('enrollee_id', sa.Integer, sa.ForeignKey('enrollee.id', ondelete='CASCADE')),
+                                 sa.Column('individual_achievement_id', sa.Integer,
+                                           sa.ForeignKey('individual_achievement.id', ondelete='CASCADE'))
+                                 )
+    individual_achievement_list = orm.relationship("IndividualAchievement",
+                                                   secondary=association_table,
+                                                   back_populates='enrolls', cascade="all,delete")
 
     def __init__(self, birthday=None, phone=None, birth_place=None, need_hostel=None, photo=None, agreement_scan=None,
                  is_budgetary=None, original_or_copy=None, enrollment_consent=None):

@@ -65,9 +65,10 @@ def create_student_personal_profile(filename, user: User):
                                    'высшего образования\n'
                                    'Сызранский государственный университет имени Филиппа Лимонадова\n')
     upper.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    personal_debt = User.student.card_number
 
     delo = document.add_paragraph(f'Личное дело №')
-    delo.add_run(f'{123}').underline = True
+    delo.add_run(f'{personal_debt}').underline = True
     delo.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.RIGHT
     big_line = '\t\t\t\t\t\t\t\t\t\t\t'
     small_line = '\t\t\t\t\t\t\t'
@@ -84,17 +85,7 @@ def create_student_personal_profile(filename, user: User):
     header = document.add_paragraph('Учебная карточка студента\n(очная форма)')
     header.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
-    # document.add_paragraph(
-    #     'Основа___личное дело № \n'
-    #     'ФИО\n'
-    #     'Дата рождения\n'
-    #     'Место рождения\n'
-    #     'Паспорт Выдан\n'
-    #     'Контакты\n'
-    #     'Телефон\n'
-    #     'E-mail\n'
-    #     'Адрес по прописке\n'
-    # )
+
     tab = document.add_table(rows=1, cols=2)
     tab.autofit = False
     tab.allow_autofit = False
@@ -106,9 +97,10 @@ def create_student_personal_profile(filename, user: User):
     par.add_run('Основа')
     par.add_run(small_line).underline = True
     par.add_run(', личное дело №')
-    par.add_run('\t\t\n').underline = True
+    par.add_run(f'{personal_debt}\n').underline = True
     par.add_run('ФИО')
-    par.add_run(big_line + '\n').underline = True
+    fio = f'{user.name} {user.surname} {user.last_name}'
+    par.add_run(fio + (line_len - len('ФИО') - len(fio))//10 * '\t' + '\n').underline = True
     par.add_run('Дата рождения')
     par.add_run((line_len - len('Дата рождения') - len(''))//10 * '\t' + '\n').underline = True
     par.add_run('Место рождения')
@@ -136,6 +128,7 @@ def create_student_personal_profile(filename, user: User):
         picture = run.add_picture(img, width=Inches(2.3), height=Inches(3))
         cur_cell.width = Cm(10)
 
-    document.save('test.docx')
+    document.save(f'{filename}.docx')
 
-# create_student_personal_profile()
+# user = User.query.first()
+# create_student_personal_profile('test', user)

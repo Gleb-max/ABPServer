@@ -12,10 +12,6 @@ class Passport(db.Model, SerializerMixin):
     serialize_rules = ( '-enrollee', )
 
     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True, unique=True)
-    # Relationships
-    enrollee_id = sa.Column(sa.Integer, sa.ForeignKey('enrollee.id', ondelete='CASCADE'))
-    enrollee = orm.relationship("Enrollee", back_populates="passport")
-
 
     series = sa.Column(sa.String(length=10), nullable=True)
     number = sa.Column(sa.String(length=10), nullable=True)
@@ -25,4 +21,8 @@ class Passport(db.Model, SerializerMixin):
     passport_scan = sa.Column(sa.String(300), nullable=True)
     registration_address = sa.Column(sa.Text, nullable=True)
     residence_address = sa.Column(sa.Text, nullable=True)
+
+    # Relationships
+    enrollee_id = sa.Column(sa.Integer, sa.ForeignKey('enrollee.id', ondelete='CASCADE'))
+    enrollee = orm.relationship("Enrollee", back_populates="passport")
 
