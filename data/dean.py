@@ -23,8 +23,8 @@ class Dean(db.Model, SerializerMixin):
 
     def __str__(self):
         if self.user:
-            if self.user.name and self.faculty and self.faculty.name:
-                return f'{self.user.name} {self.post} - {self.faculty.name}'
+            if self.user.name and self.faculty_pk:
+                return f'{self.user.name} - {self.faculty_pk}'
 
         return f"Dean"
 

@@ -8,6 +8,8 @@ from data.enrollee import Enrollee
 from data.study_direction import StudyDirection
 from datetime import datetime
 
+from data.user import User
+
 
 def create_order_of_admission(filename, enrolls: List[Enrollee], direction: StudyDirection, group_number):
     document = Document()
@@ -48,7 +50,7 @@ def create_order_of_admission(filename, enrolls: List[Enrollee], direction: Stud
     return full_file_name
 
 
-def create_student_personal_profile():
+def create_student_personal_profile(filename, user: User):
     document = Document()
 
     section = document.sections[0]
@@ -136,4 +138,4 @@ def create_student_personal_profile():
 
     document.save('test.docx')
 
-create_student_personal_profile()
+# create_student_personal_profile()
