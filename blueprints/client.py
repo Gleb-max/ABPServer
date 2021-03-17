@@ -124,9 +124,11 @@ def update_enrollee_state(e: Enrollee):
     if not any(need_data):  # данные не внесены
         e.status = enrollee_statuses.NEW
         e.consideration_stage = enrollee_statuses.STAGE_NEW
+
     elif all(without_original_need) and (not e.enrollment_consent or not e.original_or_copy):
         e.status = enrollee_statuses.WITHOUT_ORIGINAL
         e.consideration_stage = enrollee_statuses.STAGE_NEW
+
     elif all(need_data):
         e.status = enrollee_statuses.WITH_ORIGINAL
         e.consideration_stage = enrollee_statuses.STAGE_UNDER_OBSERVE
@@ -228,7 +230,8 @@ def add_enrollee_data():
         check_field_and_set("original_or_copy", enrollee, original_or_copy)
         if photo:
             path = 'media/photos/' + str(user_id) + photo.filename
-            photo.save(path)
+            a = photo.save(path)
+            print(a, "photo was saved")
             check_field_and_set("photo", enrollee, path)
 
         if agreement_scan:
