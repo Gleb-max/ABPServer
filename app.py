@@ -3,6 +3,7 @@ import json
 from flask_admin.contrib.sqla import ModelView
 from sqlalchemy import func, and_, case
 
+from admin.admin import ViewWithPK
 from data import faculty, enrollee_statuses
 from data.__all_models import *
 from blueprints import client
@@ -27,8 +28,8 @@ def initAdmin():
     app.config['SESSION_TYPE'] = 'filesystem'
 
     admin = Admin(app, name='Admin', template_mode='bootstrap3')
-    admin.add_view(ModelView(user.User, db.session))
-    admin.add_view(ModelView(enrollee.Enrollee, db.session))
+    admin.add_view(ViewWithPK(user.User, db.session))
+    admin.add_view(ViewWithPK(enrollee.Enrollee, db.session))
     admin.add_view(ModelView(passport.Passport, db.session))
     admin.add_view(ModelView(school_certificate.SchoolCertificate, db.session))
     admin.add_view(ModelView(study_direction.StudyDirection, db.session))
