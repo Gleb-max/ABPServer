@@ -8,41 +8,45 @@ from data.db_session import db
 from data.user import User
 from utils import filling_all
 
-url = "http://127.0.0.1:5000/client/add/enrolleeData/"
-#
-# files = {
-#     'photo': open('test_img.jpg', 'rb'),
-#     'passport_scan': open('test_img.jpg', 'rb'),
-#     'certificate_scan': open('test_img.jpg', 'rb'),
-#     'enrollment_consent': open('test-pdf.pdf', 'rb'),
-#     'agreement_scan': open('test-pdf.pdf', 'rb'),
-# }
-#
-# body = {
-#     'user_id': ,
-#     'is_male': 'true',
-#     'birthday': "17.12.2005",
-#     'phone': '8-800',
-#     'birth_place': 'here',
-#     'need_hostel': 'true',
-#     'study_direction_id': '1',
-#     'exams': json.dumps({'items': [{'Русский': random.randint(50, 100)}, {'Матеша': random.randint(50, 100)}]}),
-#     'passport_series': '7517',
-#     'passport_number': '397531',
-#     'who_issued': 'Выдан тем-то, тем-то',
-#     'when_issued': '15.05.2017',
-#     'department_code': '123123',
-#     'registration_address': 'адрес регистрации',
-#     'certificate_number': '123123321',
-#     'is_budgetary': 'true',
-#     'original_or_copy': 'true',
-#     'individual_achievements': json.dumps({'indexes': [1, 2, 3]})
-# }
-#
-# response = requests.request("POST", url, data=body, files=files)
-#
-# print(response.text)
 
+def fill_user(user_id):
+    url = "http://127.0.0.1:5000/client/add/enrolleeData/"
+    url = 'https://sgu-api.herokuapp.com/client/add/enrolleeData/'
+
+    files = {
+        'photo': open('test_img.jpg', 'rb'),
+        'passport_scan': open('test_img.jpg', 'rb'),
+        'certificate_scan': open('test_img.jpg', 'rb'),
+        'enrollment_consent': open('test-pdf.pdf', 'rb'),
+        'agreement_scan': open('test-pdf.pdf', 'rb'),
+    }
+
+    body = {
+        'user_id': user_id,
+        'is_male': 'true' if random.randint(0, 1) else 'false',
+        'birthday': f"{random.randint(1, 20)}.{random.randint(1, 12)}.{random.randint(1900, 2005)}",
+        'phone': '89936743021',
+        'birth_place': 'Place ...',
+        'need_hostel': 'true' if random.randint(0, 1) else 'false',
+        'study_direction_id': random.randint(1, 5),
+        'exams': json.dumps({'items': [{'Русский': random.randint(50, 100)}, {'Математика': random.randint(50, 100)}]}),
+        'passport_series': '9999',
+        'passport_number': '397531',
+        'who_issued': 'Выдан тем-то, тем-то',
+        'when_issued': f"{random.randint(1, 20)}.{random.randint(1, 12)}.{random.randint(2007, 2015)}",
+        'department_code': '321123',
+        'registration_address': 'Живет там-то, там-то',
+        'certificate_number': '999999999',
+        'is_budgetary': 'true',
+        'original_or_copy': f"{random.randint(1, 20)}.{random.randint(1, 12)}.{random.randint(2007, 2015)}",
+        'individual_achievements': json.dumps({'indexes': [random.randint(0, 3)]})
+    }
+
+    response = requests.request("POST", url, data=body, files=files)
+
+    print(response.text)
+
+fill_user(16)
 
 # def register_new_user(name, surname, last_name, is_male, email, password):
 #     if not filling_all(name, surname, last_name, is_male, email, password):

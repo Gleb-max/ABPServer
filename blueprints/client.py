@@ -257,7 +257,8 @@ def add_enrollee_data():
                     db.session.add(exam_info)
                     enrollee.exam_data_list.append(exam_info)
                     db.session.commit()
-
+        enrollee.user = user
+        db.session.commit()
         user.enrollee = enrollee
         db.session.commit()
 
