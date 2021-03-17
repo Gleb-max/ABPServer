@@ -231,7 +231,7 @@ def add_enrollee_data():
         if photo:
             path = 'media/photos/' + str(user_id) + photo.filename
             a = photo.save(path)
-            print(a, "photo was saved")
+            print(a, "photo was saved", path)
             check_field_and_set("photo", enrollee, path)
 
         if agreement_scan:
