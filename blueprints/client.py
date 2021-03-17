@@ -340,7 +340,16 @@ def user_login():
     if not filling_all(email, password):
         return make_response(REQUIRED_FIELDS_NOT_FILLING, 400)
 
+    # email as login and not enrollee
+    user = User.query.filter_by(login=email).first()
+    if user.account_type != account_types.ENROLL:
+        if user.password == password:
+            info = user.to_dict(rules=("-enrollee",))
+
+            return make_response(json.dumps(info), 200)
+
     user = db.session.query(User).filter(User.email == email).first()
+
     if user == None:
         print('user not found')
         return make_response(USER_NOT_FOUND, 401)

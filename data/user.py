@@ -13,6 +13,7 @@ class User(db.Model, SerializerMixin):
     serialize_rules = ('-enrollee', )
 
     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True, unique=True)
+    login = sa.Column(sa.String(length=100), nullable=True)
 
     name = sa.Column(sa.String(length=100))
     surname = sa.Column(sa.String(length=100))
