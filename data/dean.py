@@ -14,7 +14,7 @@ class Dean(db.Model, SerializerMixin):
     # Relationships
     user_id = sa.Column(sa.Integer, sa.ForeignKey('users.id'), nullable=True)
     user = orm.relationship("User", back_populates="dean")
-    faculty = orm.relationship('Faculty', uselist=False, back_populates="dean")
+    faculty_pk = sa.Column(sa.Integer, nullable=True)
 
     # generic information
 

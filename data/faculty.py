@@ -14,8 +14,6 @@ class Faculty(db.Model, SerializerMixin):
 
     # Relationships
     directions = orm.relationship("StudyDirection", back_populates="faculty")
-    dean_id = sa.Column(sa.Integer, sa.ForeignKey('dean.id'), nullable=True)
-    dean = orm.relationship("Dean", back_populates="faculty")
 
     name = sa.Column(sa.String(100), nullable=False)
     description = sa.Column(sa.Text, nullable=True)
