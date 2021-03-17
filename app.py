@@ -84,13 +84,6 @@ def get_rating_table():
     elif need_hostel.lower() == 'false':
         need_hostel = False
 
-    # if need_hostel == 'true':
-    #     enrolls = Enrollee.query.filter(
-    #         and_(
-    #             enrollee_statuses.WITHOUT_ORIGINAL <= Enrollee.status <= enrollee_statuses.WITH_ORIGINAL,
-    #             Enrollee.need_hostel == True
-    #         )
-    #     ).order_by(Enrollee.get_total_grade).all()
 
     if int(direction_id) < 0:  # Весь ВУЗ
         enrolls = Enrollee.query.filter(
@@ -155,11 +148,8 @@ if __name__ == "__main__":
 
     db.create_all()
     db.session.commit()
-    print(Enrollee.query.first().id)
-    print(User.query.first().id)
 
     from document_creator import create_order_of_admission
-
     create_order_of_admission('test', Enrollee.query.all(), StudyDirection.query.first())
 
     print('DB was created')
