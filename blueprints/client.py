@@ -382,7 +382,7 @@ def send_mail(receiver, header, text):
     server.login(MAIL_LOGIN, MAIL_PASSWORD)
     server.auth_plain()
     print('sending...')
-    server.sendmail(MAIL_LOGIN, receiver, msg)
+    server.sendmail(MAIL_LOGIN, [receiver], msg.as_string())
     server.quit()
 
     # Google mail
