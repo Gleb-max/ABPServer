@@ -21,7 +21,7 @@ from data.exam_info import ExamInfo
 from data.student import Student
 from data.study_direction import StudyDirection
 from data.user import User
-from resources.receipts import EnrollsList
+from resources.receipts import EnrollsList, StudentsList
 
 
 def initAdmin():
@@ -143,6 +143,7 @@ initAdmin()
 # add resources
 api = Api(app)
 api.add_resource(EnrollsList, "/api/v2/enrolls")
+api.add_resource(StudentsList, "/api/v2/students")
 
 if __name__ == "__main__":
     # db.drop_all()
