@@ -378,22 +378,22 @@ def send_mail(receiver, header, text):
     msg['To'] = receiver
 
     # Yandex mail
-    server = smtp.SMTP_SSL('smtp.yandex.com', port=465)
-    server.set_debuglevel(1)
-    server.ehlo(MAIL_LOGIN)
-    server.login(MAIL_LOGIN, MAIL_PASSWORD)
-    server.auth_plain()
-    print('sending...')
-    server.sendmail(MAIL_LOGIN, [receiver], msg.as_string())
-    server.quit()
+    # server = smtp.SMTP_SSL('smtp.yandex.com', port=465)
+    # server.set_debuglevel(1)
+    # server.ehlo(MAIL_LOGIN)
+    # server.login(MAIL_LOGIN, MAIL_PASSWORD)
+    # server.auth_plain()
+    # print('sending...')
+    # server.sendmail(MAIL_LOGIN, [receiver], msg.as_string())
+    # server.quit()
 
     # Google mail
-    # smtp_server = 'smtp.gmail.com'
-    # s = smtp.SMTP(smtp_server)
-    # s.starttls()
-    # s.login(MAIL_LOGIN, MAIL_PASSWORD)
-    # s.sendmail(MAIL_LOGIN, receiver, msg.as_string())
-    # s.quit()
+    smtp_server = 'smtp.gmail.com'
+    s = smtp.SMTP(smtp_server)
+    s.starttls()
+    s.login(MAIL_LOGIN, MAIL_PASSWORD)
+    s.sendmail(MAIL_LOGIN, receiver, msg.as_string())
+    s.quit()
     print(f'mail to {receiver} sended')
 
 
@@ -402,8 +402,6 @@ def enrollee_revision_form():
     enrollee_id = request.form.get('enrollee_id')
     incorrect_fields = request.form.getlist('incorrect_fields')
     print(incorrect_fields, enrollee_id)
-    # incorrect_fields = json.loads(incorrect_fields).get('fields')
-    # {asdadas: 123123, saddas: [] }
     if enrollee_id.isdigit():
         enrollee = Enrollee.query.filter_by(id=int(enrollee_id)).first()
         if enrollee:

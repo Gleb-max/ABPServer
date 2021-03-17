@@ -1,12 +1,12 @@
 import os
 
 # Почта
-MAIL_PASSWORD = 'limonadov'
-MAIL_LOGIN = 'info10.sgu@yandex.ru'
-
-
 # MAIL_PASSWORD = 'limonadov'
-# MAIL_LOGIN = 'SGU.im.limonadov@gmail.com'
+# MAIL_LOGIN = 'info10.sgu@yandex.ru'
+
+
+MAIL_PASSWORD = 'limonadov'
+MAIL_LOGIN = 'SGU.im.limonadov@gmail.com'
 
 PRODUCTION = os.getenv('PRODUCTION')
 

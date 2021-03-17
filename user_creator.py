@@ -46,9 +46,9 @@ def fill_user(user_id):
 
     print(response.text)
 
-fill_user(16)
+# fill_user(16)
 
-users_to_fill = [17, 10, 16, 15]
+users_to_fill = [17, 10, 16, 15, 19, 20, 21, 22, 23, 24]
 for i in users_to_fill:
     fill_user(i)
 # fill_user(19) # дарья
