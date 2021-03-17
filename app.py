@@ -149,20 +149,6 @@ if __name__ == "__main__":
     #     db.session.add(user)
     #     db.session.commit()
     # db.session.close()
-    need_hostel = True
-    enrolls = Enrollee.query.filter(
-        and_(
-            # заполнившие все поля
-            enrollee_statuses.WITHOUT_ORIGINAL <= Enrollee.status,
-            Enrollee.status <= enrollee_statuses.WITH_ORIGINAL,
-            # факультет
-            Enrollee.study_direction_id == 1,
-            # нужно ли общежитие
-            Enrollee.need_hostel == need_hostel if (need_hostel != None) else True
-        )
-    ).all()
-    enrolls.sort(key=lambda x: x.get_exam_total_grade(), reverse=True)
-
     db.create_all()
     db.session.commit()
 

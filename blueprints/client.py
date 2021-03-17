@@ -490,9 +490,8 @@ def enroll_users():
     from sqlalchemy import and_
     enrolls = Enrollee.query.filter(
         and_(
-            # заполнившие все поля
-            enrollee_statuses.WITHOUT_ORIGINAL <= Enrollee.status,
-            Enrollee.status <= enrollee_statuses.WITH_ORIGINAL,
+            # прошедшие проверку
+            Enrollee.consideration_stage == enrollee_statuses.STAGE_RECEIVED,
 
             Enrollee.study_direction_id == direction_id,
             (True if (need_original == None) else Enrollee.original_or_copy == need_original)
