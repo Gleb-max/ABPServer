@@ -493,10 +493,16 @@ def enroll_users():
         and_(
             # прошедшие проверку
             Enrollee.consideration_stage == enrollee_statuses.STAGE_RECEIVED,
-            Enrollee.study_direction_id == direction_id,
+            Enrollee.study_direction_id == direction.id,
             Enrollee.original_or_copy == need_original
         )
     ).all()
+
+    for en in Enrollee.query.all():
+        print(en.consideration_stage, enrollee_statuses.STAGE_RECEIVED)
+        print(en.study_direction_id, direction.id)
+        print(en.original_or_copy)
+        print()
 
     enrolls.sort(key=lambda x: x.get_exam_total_grade(), reverse=True)
     print('to table:', enrolls)
