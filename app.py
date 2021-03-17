@@ -153,10 +153,11 @@ if __name__ == "__main__":
     #     db.session.commit()
     # db.session.close()
     from blueprints.utils import enroll_student
-    abitr = Enrollee.query.all()[1]
-    enroll_student(abitr, is_budget=True, group_number='АИ2035')
-    db.create_all()
-    db.session.commit()
+    # student = Student()
+    # abitr = Enrollee.query.all()[1]
+    # enroll_student(abitr, is_budget=True, group_number='АИ2035')
+    # db.create_all()
+    # db.session.commit()
 
     # from document_creator import create_order_of_admission
     # create_order_of_admission('test', Enrollee.query.all(), StudyDirection.query.first())

@@ -99,8 +99,8 @@ def convert_bool_str_to_bool(string):
 
 
 def convert_str_to_datetime(string):
-    # date_time_example = '29.06.2020'
-    return datetime.strptime(string, '%d-%m-%Y')
+    # date_time_example = '2020.06.29'
+    return datetime.strptime(string, '%Y-%m-%d')
 
 
 def update_enrollee_state(e: Enrollee):
