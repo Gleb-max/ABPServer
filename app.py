@@ -1,7 +1,7 @@
 import json
 
 from flask_admin.contrib.sqla import ModelView
-from sqlalchemy import func, and_
+from sqlalchemy import func, and_, case
 
 from data import faculty, enrollee_statuses
 from data.__all_models import *
@@ -13,6 +13,7 @@ from data.db_session import app, db
 from config import *
 from flask_restful import Api
 import logging
+import sys
 
 from data.enrollee import Enrollee
 from data.exam_info import ExamInfo
@@ -75,7 +76,7 @@ def get_rating_table():
     need_hostel = request.form.get('need_hostel')
 
     enrolls = []
-    print(direction_id, need_hostel)
+    print(direction_id, need_hostel, file=sys.stderr)
 
     if need_hostel == None:
         pass
@@ -83,7 +84,8 @@ def get_rating_table():
         need_hostel = True
     elif need_hostel.lower() == 'false':
         need_hostel = False
-
+    else:
+        need_hostel = None
 
     if int(direction_id) < 0:  # Весь ВУЗ
         enrolls = Enrollee.query.filter(
@@ -92,9 +94,9 @@ def get_rating_table():
                 enrollee_statuses.WITHOUT_ORIGINAL <= Enrollee.status,
                 Enrollee.status <= enrollee_statuses.WITH_ORIGINAL,
                 # нужно ли общежитие
-                Enrollee.need_hostel == need_hostel if (need_hostel != None ) else True
+                Enrollee.need_hostel == need_hostel if (need_hostel != None) else True
             )
-        ).order_by(Enrollee.get_total_grade).all()
+        ).all()
     elif int(direction_id) > 0:  # По Факультетам
         enrolls = Enrollee.query.filter(
             and_(
@@ -104,18 +106,19 @@ def get_rating_table():
                 # факультет
                 Enrollee.study_direction_id == direction_id,
                 # нужно ли общежитие
-                Enrollee.need_hostel == need_hostel if (need_hostel != None ) else True
+                Enrollee.need_hostel == need_hostel if (need_hostel != None) else True
             )
-        ).order_by(Enrollee.get_total_grade).all()
+        ).all()
     else:
         return make_response({'result': 'Incorrect request params'}, 400)
 
+    enrolls.sort(key=lambda x: x.get_exam_total_grade(), reverse=True)
     ans = []
     for enr in enrolls:
         ans.append({'exam_tota_grade': enr.get_exam_total_grade(),
                     'individual_grade': enr.get_individual_grade(),
                     'is_original': enr.original_or_copy
-        })
+                    })
     return make_response(json.dumps({'table': ans}), 200)
 
 
@@ -145,6 +148,19 @@ if __name__ == "__main__":
     #     db.session.add(user)
     #     db.session.commit()
     # db.session.close()
+    need_hostel = True
+    enrolls = Enrollee.query.filter(
+        and_(
+            # заполнившие все поля
+            enrollee_statuses.WITHOUT_ORIGINAL <= Enrollee.status,
+            Enrollee.status <= enrollee_statuses.WITH_ORIGINAL,
+            # факультет
+            Enrollee.study_direction_id == 1,
+            # нужно ли общежитие
+            Enrollee.need_hostel == need_hostel if (need_hostel != None) else True
+        )
+    ).all()
+    enrolls.sort(key=lambda x: x.get_exam_total_grade(), reverse=True)
 
     db.create_all()
     db.session.commit()
