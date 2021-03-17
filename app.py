@@ -163,8 +163,8 @@ print('Initializing admin panel...')
 initAdmin()
 
 # add resources
-# api = Api(app)
-# api.add_resource(EnrollsList, "/api/v2/enrolls")
+api = Api(app)
+api.add_resource(EnrollsList, "/api/v2/enrolls")
 
 if __name__ == "__main__":
     # db.drop_all()

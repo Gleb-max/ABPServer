@@ -13,4 +13,4 @@ parser_create.add_argument("password", required=True, type=str)
 parser_create.add_argument("scan_result", required=True, type=str)
 
 parser_get_enrolles = reqparse.RequestParser()
-parser_get_all.add_argument("direction_id", required=False, type=int)
+parser_get_enrolles.add_argument("direction_id", required=False, type=int)

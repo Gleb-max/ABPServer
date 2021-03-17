@@ -10,6 +10,10 @@ class EnrollsList(Resource):
     def get(self):
         answer = []
 
+        args = parser_get_enrolles.parse_args()
+        direction_id = args["direction_id"]
+        print(direction_id)
+
         for enrollee in Enrollee.query.all():
             user_dict = {}
             if enrollee.user:
