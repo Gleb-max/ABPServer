@@ -488,14 +488,16 @@ def enroll_users():
     need_original = True  # По критериям
 
     from sqlalchemy import and_
+
     enrolls = Enrollee.query.filter(
         and_(
             # прошедшие проверку
             Enrollee.consideration_stage == enrollee_statuses.STAGE_RECEIVED,
             Enrollee.study_direction_id == direction_id,
-            need_original == True
+            Enrollee.original_or_copy == need_original
         )
     ).all()
+
     enrolls.sort(key=lambda x: x.get_exam_total_grade(), reverse=True)
     print('to table:', enrolls)
     i = 0
