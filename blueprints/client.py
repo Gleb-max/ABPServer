@@ -349,7 +349,6 @@ def user_login():
         else:
             return make_response(FORM_INCORRECT, 401)
 
-
     user = db.session.query(User).filter(User.email == email).first()
 
     if user == None:
@@ -373,7 +372,6 @@ def send_mail(receiver, header, text):
     msg['Subject'] = header
     msg['From'] = MAIL_LOGIN
     msg['To'] = receiver
-
 
     # Yandex mail
     server = smtp.SMTP_SSL('smtp.yandex.com', port=465)
@@ -414,9 +412,8 @@ def enrollee_revision_form():
                       f'Уведомляем вас, что при подаче документов в '
                       f'Сызранский государственный университет имени Филиппа Лимонадова '
                       f'вы допустили ошибки.\n\n'
-                      f'Просим исправить указанные поля:\n'
-                      f'{new_line.join(incorrect_fields)}\n\n'
-                      f'в ближайшее время.\n\n'
+                      f'Просим исправить указанные поля в ближайшее время.\n'
+                      f'  {new_line.join(incorrect_fields)}\n\n'
                       f'С уважением,\n'
                       f'приемная комиссия СГУ им. Ф.Лимонадова'
                       )
@@ -474,15 +471,17 @@ def enroll_users():
     need_original = request.form.get('need_original')
     direction_id = request.form.get('direction_id')
     direction = StudyDirection.query.filter_by(id=int(direction_id)).first()
+    print(direction, "Для формирования документов о зачислении")
     if not direction:
         return make_response(FORM_INCORRECT, 400)
 
-    if need_original == None:
-        pass
-    elif need_original.lower() == 'true':
-        need_original = True
-    else:
-        need_original = False
+    # if need_original == None:
+    #     pass
+    # elif need_original.lower() == 'true':
+    #     need_original = True
+    # else:
+    #     need_original = False
+    need_original = True  # По критериям
 
     from sqlalchemy import and_
     enrolls = Enrollee.query.filter(
