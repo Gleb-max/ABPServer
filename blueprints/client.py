@@ -342,11 +342,13 @@ def user_login():
 
     # email as login and not enrollee
     user = User.query.filter_by(login=email).first()
-    if user.account_type != account_types.ENROLL:
+    if user and user.account_type != account_types.ENROLL:
         if user.password == password:
             info = user.to_dict(rules=("-enrollee",))
-
             return make_response(json.dumps(info), 200)
+        else:
+            return make_response(FORM_INCORRECT, 401)
+
 
     user = db.session.query(User).filter(User.email == email).first()
 
