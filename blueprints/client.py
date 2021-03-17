@@ -493,7 +493,7 @@ def enroll_users():
             # прошедшие проверку
             Enrollee.consideration_stage == enrollee_statuses.STAGE_RECEIVED,
             Enrollee.study_direction_id == direction_id,
-            (True if (need_original == None) else Enrollee.original_or_copy == need_original)
+            need_original == True
         )
     ).all()
     enrolls.sort(key=lambda x: x.get_exam_total_grade(), reverse=True)
