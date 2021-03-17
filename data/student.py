@@ -13,10 +13,11 @@ from data.study_direction import StudyDirection
 class Student(db.Model, SerializerMixin):
     __tablename__ = "student"
     serialize_rules = ('-user',)
+
     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True, unique=True)
 
     # Relationships
-    user_id = sa.Column(sa.Integer, sa.ForeignKey('users.id'), nullable=False)
+    user_id = sa.Column(sa.Integer, sa.ForeignKey('users.id'), nullable=True)
     user = orm.relationship("User", back_populates="student")
 
     # Common information
@@ -27,20 +28,20 @@ class Student(db.Model, SerializerMixin):
     enrollment_date = sa.Column(sa.Date, nullable=True)
     expiration_date = sa.Column(sa.Date, nullable=True)
 
-    # def __init__(self, group_number=None, user=None):
-    #     base_number = 100
-    #     library_base_number = 1000
-    #     self.card_number = base_number + Student.query.count() + 1
-    #     self.library_card_number = library_base_number + Student.query.count() + 1
-    #
-    #     if user and user.enrollee and user.enrollee.study_direction_id:
-    #         self.record_book_number = StudyDirection.query.filter_by(id=user.enrollee.study_direction_id).count() + 1
-    #         # self.user_id = user.id
-    #         # self.user = user
-    #
-    #     self.enrollment_date = datetime.now().date()
-    #     self.expiration_date = datetime.now().date() + timedelta(days=365 * 4)
-    #     self.group_number = group_number
+    def __init__(self, group_number=None):
+        base_number = 100
+        library_base_number = 1000
+        self.card_number = base_number + Student.query.count() + 1
+        self.library_card_number = library_base_number + Student.query.count() + 1
+
+        # if user and user.enrollee and user.enrollee.study_direction_id:
+        #     self.record_book_number = StudyDirection.query.filter_by(id=user.enrollee.study_direction_id).count() + 1
+        #     self.user_id = user.id
+        #     self.user = user
+
+        self.enrollment_date = datetime.now().date()
+        self.expiration_date = datetime.now().date() + timedelta(days=365 * 4)
+        self.group_number = group_number
 
     def __str__(self):
         if self.user:

@@ -17,6 +17,7 @@ class Enrollee(db.Model, SerializerMixin):
     # Relationships
     user_id = sa.Column(sa.Integer, sa.ForeignKey('users.id', ondelete='CASCADE'))
     user = orm.relationship("User", back_populates="enrollee")
+
     passport = orm.relationship("Passport", uselist=False, back_populates="enrollee", cascade="all,delete")
     school_certificate = orm.relationship("SchoolCertificate", uselist=False, back_populates="enrollee",
                                           cascade="all,delete")

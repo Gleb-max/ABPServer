@@ -46,9 +46,12 @@ def enroll_student(enrollee: Enrollee, is_budget=False, group_number=None):
     db.session.commit()
     user = enrollee.user
 
-    # student = Student()
-    # user.student = student
-    # db.session.commit()
+    student = Student()
+    db.session.add(student)
+    db.session.commit()
+
+    student.user = user
+    db.session.commit()
 
     budget_text = 'бюджет' if is_budget else 'платно'
     send_mail(enrollee.user.email, 'СГУ им. Лимонадова',

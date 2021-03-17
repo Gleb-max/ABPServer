@@ -18,6 +18,7 @@ import sys
 
 from data.enrollee import Enrollee
 from data.exam_info import ExamInfo
+from data.student import Student
 from data.study_direction import StudyDirection
 from data.user import User
 from resources.receipts import EnrollsList
@@ -144,24 +145,8 @@ api.add_resource(EnrollsList, "/api/v2/enrolls")
 
 if __name__ == "__main__":
     # db.drop_all()
-    # for i in range(10):
-    #     user = User(
-    #         'user' + str(User.query.count()), 'user' + str(User.query.count()), 'user' + str(User.query.count() + 2),
-    #         True, str(User.query.count()) + '@mail.ri', '123'
-    #     )
-    #     db.session.add(user)
-    #     db.session.commit()
-    # db.session.close()
-    from blueprints.utils import enroll_student
-    # student = Student()
-    # abitr = Enrollee.query.all()[1]
-    # enroll_student(abitr, is_budget=True, group_number='АИ2035')
-    # db.create_all()
-    # db.session.commit()
+    db.create_all()
+    db.session.commit()
 
-    # from document_creator import create_order_of_admission
-    # create_order_of_admission('test', Enrollee.query.all(), StudyDirection.query.first())
-
-    print('DB was created')
     host = PRODUCTION_HOST if PRODUCTION else LOCAL_HOST
     app.run(host=host, port=PORT, debug=True)

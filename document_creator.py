@@ -46,6 +46,8 @@ def create_order_of_admission(filename, enrolls: List[Enrollee], direction: Stud
     document.save(full_file_name)
     return full_file_name
 
-#
-# enrolls = Enrollee.query.filter_by(birth_place='here').all()
-# create_order_of_admission('test', enrolls, StudyDirection.query.first())
+
+def create_student_personal_profile():
+    # TODO
+    pass
+
