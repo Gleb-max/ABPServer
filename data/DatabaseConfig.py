@@ -8,7 +8,7 @@ DATABASE_URL = os.getenv('DATABASE_URL')
 
 
 class Config(object):
-    DEBUG = False
+    DEBUG = True
     TESTING = False
     CSRF_ENABLED = True
     SECRET_KEY = 'secret'

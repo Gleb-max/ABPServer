@@ -149,9 +149,9 @@ if __name__ == "__main__":
     db.create_all()
     db.session.commit()
 
-    from document_creator import create_order_of_admission
-    create_order_of_admission('test', Enrollee.query.all(), StudyDirection.query.first())
+    # from document_creator import create_order_of_admission
+    # create_order_of_admission('test', Enrollee.query.all(), StudyDirection.query.first())
 
     print('DB was created')
     host = PRODUCTION_HOST if PRODUCTION else LOCAL_HOST
-    app.run(host=host, port=PORT)
+    app.run(host=host, port=PORT, debug=True)

@@ -18,3 +18,6 @@ class IndividualAchievement(db.Model, SerializerMixin):
 
     name = sa.Column(sa.String(100), nullable=False)
     additional_score = sa.Column(sa.SmallInteger, nullable=False)
+
+    def __str__(self):
+        return self.name

@@ -481,8 +481,8 @@ def enroll_users():
             Enrollee.study_direction_id == direction_id,
             (True if (need_original == None) else Enrollee.original_or_copy == need_original)
         )
-    ).order_by(Enrollee.get_total_grade).all()
-
+    ).order_by(Enrollee.get_total_grade_exp).all()
+    print(enrolls)
     i = 0
     enrolled_users = []
     # Зачислить бюджетников
@@ -498,6 +498,7 @@ def enroll_users():
         enroll_student(enrolls[j], is_budget=False)
         enrolled_users.append(enrolls[i])
 
+    print('Generating report...')
     file_path = create_order_of_admission(f'media/commands/{slugify(direction.name)}', enrolled_users, direction)
 
     return make_response(json.dumps({'file_url': file_path}), 200)

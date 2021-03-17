@@ -25,3 +25,10 @@ class ExamInfo(db.Model, SerializerMixin):
         self.grade = grade
 
 
+    def __str__(self):
+        if self.name and self.grade:
+            return f'{self.name} = {self.grade}'
+        else:
+            return 'Exam info'
+
+

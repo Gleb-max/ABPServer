@@ -62,6 +62,10 @@ class Enrollee(db.Model, SerializerMixin):
         self.enrollment_consent = enrollment_consent
 
     def __str__(self):
+        if self.user:
+            if self.user.name and self.user.surname:
+                return f'{self.user.name} {self.user.surname}'
+
         return f"<Enrollee>"
 
     def __repr__(self):
@@ -84,7 +88,7 @@ class Enrollee(db.Model, SerializerMixin):
         return self.get_exam_total_grade() + self.get_individual_grade()
 
     @get_total_grade.expression
-    def get_total_grade(cls):
+    def get_total_grade_exp(cls):
         return (select([func.count(Enrollee.id)])
                 .where(Enrollee.id == cls.id))
 
