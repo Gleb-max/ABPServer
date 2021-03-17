@@ -33,12 +33,6 @@ class Student(db.Model, SerializerMixin):
         library_base_number = 1000
         self.card_number = base_number + Student.query.count() + 1
         self.library_card_number = library_base_number + Student.query.count() + 1
-
-        # if user and user.enrollee and user.enrollee.study_direction_id:
-        #     self.record_book_number = StudyDirection.query.filter_by(id=user.enrollee.study_direction_id).count() + 1
-        #     self.user_id = user.id
-        #     self.user = user
-
         self.enrollment_date = datetime.now().date()
         self.expiration_date = datetime.now().date() + timedelta(days=365 * 4)
         self.group_number = group_number
@@ -48,7 +42,7 @@ class Student(db.Model, SerializerMixin):
             if self.user.name and self.user.surname:
                 return f'{self.user.name} {self.user.surname}'
 
-        return f"<Enrollee>"
+        return f"Student"
 
     def __repr__(self):
         return self.__str__()

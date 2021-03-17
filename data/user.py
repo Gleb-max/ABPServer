@@ -5,6 +5,7 @@ from data import student
 from sqlalchemy import orm
 from data.db_session import db
 from data.enrollee import Enrollee
+from data.dean import Dean
 
 
 class User(db.Model, SerializerMixin):
@@ -27,7 +28,8 @@ class User(db.Model, SerializerMixin):
     enrollee = orm.relationship('Enrollee', uselist=False, back_populates="user")
     # 1 - студент
     student = orm.relationship('Student', uselist=False, back_populates="user")
-    # 2 -
+    # 2 - деканат
+    dean = orm.relationship('Dean', uselist=False, back_populates="user")
 
     def __init__(self, name, surname, last_name, is_male, email, password, account_type=0):
         self.name = name

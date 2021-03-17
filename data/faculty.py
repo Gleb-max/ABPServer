@@ -8,12 +8,14 @@ from data.db_session import db
 
 class Faculty(db.Model, SerializerMixin):
     __tablename__ = "faculty"
-    serialize_rules = ('-directions',)
+    serialize_rules = ('-directions', '-dean')
 
     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True, unique=True)
 
     # Relationships
     directions = orm.relationship("StudyDirection", back_populates="faculty")
+    dean_id = sa.Column(sa.Integer, sa.ForeignKey('dean.id'), nullable=True)
+    dean = orm.relationship("Dean", back_populates="faculty")
 
     name = sa.Column(sa.String(100), nullable=False)
     description = sa.Column(sa.Text, nullable=True)
