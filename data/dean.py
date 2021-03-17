@@ -16,10 +16,15 @@ class Dean(db.Model, SerializerMixin):
     user = orm.relationship("User", back_populates="dean")
     faculty = orm.relationship('Faculty', uselist=False, back_populates="dean")
 
+    # generic information
+
+    post = sa.Column(sa.String(length=90), nullable=True)
+    phone = sa.Column(sa.String(length=20), nullable=True)
+
     def __str__(self):
         if self.user:
-            if self.user.name and self.user.surname and self.faculty and self.faculty.name:
-                return f'{self.user.name} {self.user.surname} - {self.faculty.name}'
+            if self.user.name and self.faculty and self.faculty.name:
+                return f'{self.user.name} {self.post} - {self.faculty.name}'
 
         return f"Dean"
 
