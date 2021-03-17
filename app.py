@@ -123,42 +123,17 @@ def get_rating_table():
     return make_response(json.dumps({'table': ans}), 200)
 
 
-# @app.route('/api/v2/enrolls', methods=['GET'])
-# @app.route('/api/v2/enrolls?<direction_id>')
-# def get_enrolls(direction_id=None):
-#     print(direction_id)
-#
-#     if direction_id and direction_id.isdigit():
-#         direction_id = int(direction_id)
-#         enrollee_list = Enrollee.query.filter_by(study_direction_id=direction_id).all()
-#     else:
-#         enrollee_list = Enrollee.query.all()
-#
-#     answer = []
-#     for enrollee in enrollee_list:
-#         user_dict = {}
-#         if enrollee.user:
-#             user_dict = enrollee.user.to_dict()
-#         if enrollee:
-#             combined_dict = enrollee.to_dict()
-#             combined_dict.update(user_dict)
-#
-#             combined_dict['enrollee_pk'] = enrollee.id
-#
-#             answer.append(combined_dict)
-#
-#     return json.dumps({'enrolls': answer})
-
-
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 
 # register blueprint for mobile and desktop clients
 app.register_blueprint(client.blueprint)
 
+# db init
 print('Creating tables...')
 db.create_all()
 db.session.commit()
+
 print('Initializing admin panel...')
 initAdmin()
 
