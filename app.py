@@ -90,9 +90,8 @@ def get_rating_table():
     if int(direction_id) < 0:  # Весь ВУЗ
         enrolls = Enrollee.query.filter(
             and_(
-                # заполнившие все поля
-                enrollee_statuses.WITHOUT_ORIGINAL <= Enrollee.status,
-                Enrollee.status <= enrollee_statuses.WITH_ORIGINAL,
+                # прошедшие проверку
+                Enrollee.consideration_stage == enrollee_statuses.STAGE_RECEIVED,
                 # нужно ли общежитие
                 Enrollee.need_hostel == need_hostel if (need_hostel != None) else True
             )
@@ -100,9 +99,8 @@ def get_rating_table():
     elif int(direction_id) > 0:  # По Факультетам
         enrolls = Enrollee.query.filter(
             and_(
-                # заполнившие все поля
-                enrollee_statuses.WITHOUT_ORIGINAL <= Enrollee.status,
-                Enrollee.status <= enrollee_statuses.WITH_ORIGINAL,
+                # прошедшие проверку
+                Enrollee.consideration_stage == enrollee_statuses.STAGE_RECEIVED,
                 # факультет
                 Enrollee.study_direction_id == direction_id,
                 # нужно ли общежитие
