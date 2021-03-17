@@ -17,8 +17,8 @@ def fill_user(user_id):
         'photo': open('test_img.jpg', 'rb'),
         'passport_scan': open('test_img.jpg', 'rb'),
         'certificate_scan': open('test_img.jpg', 'rb'),
-        'enrollment_consent': open('test-pdf.pdf', 'rb'),
-        'agreement_scan': open('test-pdf.pdf', 'rb'),
+        'enrollment_consent': open('test_img.jpg', 'rb'),
+        'agreement_scan': open('test_img.jpg', 'rb'),
     }
 
     body = {

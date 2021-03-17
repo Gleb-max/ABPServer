@@ -158,13 +158,16 @@ class EnrollsList(Resource):
     def get(self):
         answer = []
         for enrollee in Enrollee.query.all():
-            user_dict = enrollee.user.to_dict()
-            combined_dict = enrollee.to_dict()
-            combined_dict.update(user_dict)
+            user_dict = {}
+            if enrollee.user:
+                user_dict = enrollee.user.to_dict()
+            if enrollee:
+                combined_dict = enrollee.to_dict()
+                combined_dict.update(user_dict)
 
-            combined_dict['enrollee_pk'] = enrollee.id
+                combined_dict['enrollee_pk'] = enrollee.id
 
-            answer.append(combined_dict)
+                answer.append(combined_dict)
 
         return json.dumps({'enrolls': answer})
 
