@@ -115,10 +115,12 @@ def get_rating_table():
     enrolls.sort(key=lambda x: x.get_exam_total_grade(), reverse=True)
     ans = []
     for enr in enrolls:
-        ans.append({'exam_tota_grade': enr.get_exam_total_grade(),
-                    'individual_grade': enr.get_individual_grade(),
-                    'is_original': enr.original_or_copy
-                    })
+        ans.append({
+            'user': enr.user.to_dict(),
+            'exam_total_grade': enr.get_exam_total_grade(),
+            'individual_grade': enr.get_individual_grade(),
+            'is_original': enr.original_or_copy
+        })
     return make_response(json.dumps({'table': ans}), 200)
 
 

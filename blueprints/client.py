@@ -374,22 +374,24 @@ def send_mail(receiver, header, text):
     msg['From'] = MAIL_LOGIN
     msg['To'] = receiver
 
+
     # Yandex mail
-    # server = smtp.SMTP_SSL('smtp.yandex.com')
-    # server.set_debuglevel(1)
-    # server.ehlo(MAIL_LOGIN)
-    # server.login(MAIL_LOGIN, MAIL_PASSWORD)
-    # server.auth_plain()
-    # server.sendmail(MAIL_LOGIN, receiver, msg)
-    # server.quit()
+    server = smtp.SMTP_SSL('smtp.yandex.com', port=465)
+    server.set_debuglevel(1)
+    server.ehlo(MAIL_LOGIN)
+    server.login(MAIL_LOGIN, MAIL_PASSWORD)
+    server.auth_plain()
+    print('sending...')
+    server.sendmail(MAIL_LOGIN, receiver, msg)
+    server.quit()
 
     # Google mail
-    smtp_server = 'smtp.gmail.com'
-    s = smtp.SMTP(smtp_server)
-    s.starttls()
-    s.login(MAIL_LOGIN, MAIL_PASSWORD)
-    s.sendmail(MAIL_LOGIN, receiver, msg.as_string())
-    s.quit()
+    # smtp_server = 'smtp.gmail.com'
+    # s = smtp.SMTP(smtp_server)
+    # s.starttls()
+    # s.login(MAIL_LOGIN, MAIL_PASSWORD)
+    # s.sendmail(MAIL_LOGIN, receiver, msg.as_string())
+    # s.quit()
     print(f'mail to {receiver} sended')
 
 
@@ -441,7 +443,7 @@ def enrollee_confirm_form():
                       f'Уведомляем вас, что вы успешно подали документы в ' + \
                       f'Сызранский государственный университет имени Филиппа Лимонадова. ' + \
                       f'С этого момента вы участвуете в конкурсе на зачисление.\n\nС уважением,\n' + \
-                      f'приемная комиссия СГУ им. Ф.Лимонадова'
+                      f'приемная комиссия СГУ им. Ф.Лимонадова.'
                       )
             return make_response(RESULT_SUCCESS, 200)
         else:
