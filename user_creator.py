@@ -11,7 +11,7 @@ from utils import filling_all
 
 def fill_user(user_id):
     url = "http://127.0.0.1:5000/client/add/enrolleeData/"
-    url = 'https://sgu-api.herokuapp.com/client/add/enrolleeData/'
+    url = 'https://sgu-api-v2.herokuapp.com/client/add/enrolleeData/'
 
     files = {
         'photo': open('test_img.jpg', 'rb'),
@@ -24,7 +24,7 @@ def fill_user(user_id):
     body = {
         'user_id': user_id,
         'is_male': 'true' if random.randint(0, 1) else 'false',
-        'birthday': f"{random.randint(1, 20)}.{random.randint(1, 12)}.{random.randint(1900, 2005)}",
+        'birthday': f"{random.randint(2007, 2015)}-{random.randint(1, 12)}-{random.randint(1, 20)}",
         'phone': f'8993674{random.randint(1000, 9999)}',
         'birth_place': 'Place ...',
         'need_hostel': 'true' if random.randint(0, 1) else 'false',
@@ -33,12 +33,12 @@ def fill_user(user_id):
         'passport_series': random.randint(1000, 9999),
         'passport_number': f'3975{random.randint(10, 99)}',
         'who_issued': 'Выдан тем-то, тем-то',
-        'when_issued': f"{random.randint(1, 20)}.{random.randint(1, 12)}.{random.randint(2007, 2015)}",
+        'when_issued': f"{random.randint(2007, 2015)}-{random.randint(1, 12)}-{random.randint(1, 20)}",
         'department_code': '321123',
         'registration_address': 'Живет там-то, там-то',
         'certificate_number': 213 * random.randint(1,30),
         'is_budgetary': 'true',
-        'original_or_copy': f"{random.randint(1, 20)}.{random.randint(1, 12)}.{random.randint(2007, 2015)}",
+        'original_or_copy': 'true' if random.randint(0, 1) else 'false',
         'individual_achievements': json.dumps({'indexes': [random.randint(0, 3)]})
     }
 
@@ -46,12 +46,11 @@ def fill_user(user_id):
 
     print(response.text)
 
-# fill_user(16)
 
-users_to_fill = [17, 10, 16, 15, 19, 20, 21, 22, 23, 24]
+users_to_fill = [1]
 for i in users_to_fill:
     fill_user(i)
-# fill_user(19) # дарья
+
 
 # def register_new_user(name, surname, last_name, is_male, email, password):
 #     if not filling_all(name, surname, last_name, is_male, email, password):
