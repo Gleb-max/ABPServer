@@ -130,5 +130,3 @@ def create_student_personal_profile(filename, user: User):
 
     document.save(f'{filename}.docx')
 
-# user = User.query.first()
-# create_student_personal_profile('test', user)

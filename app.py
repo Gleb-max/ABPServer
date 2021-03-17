@@ -21,6 +21,7 @@ from data.exam_info import ExamInfo
 from data.student import Student
 from data.study_direction import StudyDirection
 from data.user import User
+from document_creator import create_student_personal_profile
 from resources.receipts import EnrollsList, StudentsList
 
 
@@ -149,6 +150,9 @@ if __name__ == "__main__":
     # db.drop_all()
     db.create_all()
     db.session.commit()
+
+    user = User.query.first()
+    create_student_personal_profile('test', user)
 
     host = PRODUCTION_HOST if PRODUCTION else LOCAL_HOST
     app.run(host=host, port=PORT, debug=True)

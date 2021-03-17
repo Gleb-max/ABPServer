@@ -57,7 +57,9 @@ class StudentsList(Resource):
             data = db.session.query(User).join(Student).join(Enrollee).all()
 
         for user in data:
+            enrollee_dict = user.enrollee.to_dict()
             user_dict = user.to_dict()
+            user_dict.update(enrollee_dict)
             answer.append(user_dict)
 
         return json.dumps({'students': answer})

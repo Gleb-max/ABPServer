@@ -22,11 +22,11 @@ class Student(db.Model, SerializerMixin):
 
     # Common information
     group_number = sa.Column(sa.String(20), nullable=True)
-    card_number = sa.Column(sa.Integer, nullable=True)
-    record_book_number = sa.Column(sa.Integer, nullable=True)
-    library_card_number = sa.Column(sa.Integer, nullable=True)
-    enrollment_date = sa.Column(sa.Date, nullable=True)
-    expiration_date = sa.Column(sa.Date, nullable=True)
+    card_number = sa.Column(sa.Integer(), nullable=True)
+    record_book_number = sa.Column(sa.Integer(), nullable=True)
+    library_card_number = sa.Column(sa.Integer(), nullable=True)
+    enrollment_date = sa.Column(sa.Date(), nullable=True)
+    expiration_date = sa.Column(sa.Date(), nullable=True)
 
     def __init__(self, group_number=None):
         base_number = 100
