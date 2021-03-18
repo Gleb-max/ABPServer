@@ -68,7 +68,8 @@ def policy():
 
 @app.route('/get_file/<path:path>', methods=['GET'])
 def download(path):
-    return send_from_directory(filename=path, directory=os.path.abspath(os.getcwd()), cache_timeout=None)
+    return send_from_directory(filename=path, directory=os.path.abspath(os.getcwd()), as_attachment=True,
+                               cache_timeout=0)
 
 
 @app.route('/confirm_form', methods=['GET'])
