@@ -254,7 +254,7 @@ def create_student_record_book(filename, users: List[User], need_pdf=True):
     return input_file_path
 
 
-def create_student_card(filename, users: List[User], need_pdf=False):
+def create_student_card(filename, users: List[User], need_pdf=True):
     document = Document()
 
     for (ind, user) in enumerate(users):
@@ -428,15 +428,15 @@ def create_instruct_table(filename, users: List[User], subject_name, need_pdf=Tr
     return input_file_path
 
 
-def create_attendance_log(file_name, subject_name, users:List[User], need_pdf=True):
+def create_attendance_log():
     document = Document()
 
     header = document.add_paragraph()
     header.add_run(f'Журнал посещаемости группы').bold = True
-    header.add_run(f'  {subject_name} ').underline = True
+    header.add_run(f'  {"subject_name"} ').underline = True
     header.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
-    table = document.add_table(cols=17, rows=len(users) + 2, style='Table Grid')
+    table = document.add_table(cols=17, rows=10 + 2, style='Table Grid')
 
     table.rows[0].cells[0].merge(table.cell(1, 0))
     table.cell(0, 0).add_paragraph('№\nп/п')
@@ -448,7 +448,8 @@ def create_attendance_log(file_name, subject_name, users:List[User], need_pdf=Tr
     p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
     table.cell(0, 1).vertical_alignment = WD_ALIGN_VERTICAL.CENTER
 
-    table.rows[0].cells[2].merge(table.cell(1, 16))
+    table.rows[0].cells[2].merge(table.cell(1, 17))
+    table.cell(0, 2).add_paragraph('Предмет')
 
     table.rows[0].cells[2].merge(table.cell(0, 3))
     table.cell(0, 2).add_paragraph('Группа')
@@ -496,11 +497,6 @@ def create_attendance_log(file_name, subject_name, users:List[User], need_pdf=Tr
     input_file_path = f'{"123"}.docx'
     document.save(input_file_path)
 
-    if need_pdf:
-        out_file_path = f'{"filename"}.pdf'
-        import pythoncom
-        pythoncom.CoInitializeEx(0)
-        convert_docx2pdf(input_file_path, out_file_path)
-        return out_file_path
 
     return input_file_path
+
