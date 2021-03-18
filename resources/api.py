@@ -69,10 +69,6 @@ class ChangeStudentInfo(Resource):
             return make_response({'result': 'user not found'}, 404)
 
         passport = user.enrollee.passport
-        print('user enrolle: ', user.enrollee)
-        print('user passpoer', user.enrollee.passport)
-        print('group name', group_name)
-        print('bilet', library_card_number)
 
         if email:
             user.email = email
@@ -86,16 +82,12 @@ class ChangeStudentInfo(Resource):
             passport.residence_address = residence_address
             db.session.commit()
 
-        print(library_card_number)
         if library_card_number:
             user.student.library_card_number = library_card_number
             db.session.commit()
 
-        print('phone', phone)
         if phone != None:
-            print(phone)
             user.enrollee.phone = phone
-            print('user phone:', user.enrollee.phone)
             db.session.commit()
 
         if series != None:
@@ -109,15 +101,12 @@ class ChangeStudentInfo(Resource):
         if who_issued != None:
             passport.who_issued = who_issued
             db.session.commit()
-        print(passport.__dict__)
-        print(department_code)
+
         if department_code > 0:
-            print(department_code)
             passport.department_code = department_code
-            print(user.enrollee.passport.__dict__)
             db.session.commit()
 
-        print(when_issued)
+
         if when_issued != None:
             when_issued = datetime.strptime(when_issued, '%Y-%m-%d')
             passport.when_issued = when_issued
@@ -125,11 +114,8 @@ class ChangeStudentInfo(Resource):
 
         db.session.commit()
 
-        print(group_name)
         if group_name:
-            print(group_name)
             students_group = StudentsGroup.query.filter_by(name=group_name).first()
-            print(students_group)
             if not students_group:
                 return make_response({'result': 'student group not found'})
 
@@ -137,6 +123,7 @@ class ChangeStudentInfo(Resource):
             user.enrollee.study_direction = students_group.direction
             db.session.commit()
 
+        print('data was changed successfully')
         return make_response({'result': 'success'}, 200)
 
 
