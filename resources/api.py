@@ -140,7 +140,7 @@ class StudentsList(Resource):
             groups = direction.groups
             data = []
             for g in groups:
-                studs = g.studens
+                studs = g.students
                 for s in studs:
                     data.append(s.user)
             # data = db.session.query(User).join(Student).join(Enrollee).filter(
