@@ -21,7 +21,7 @@ from data.exam_info import ExamInfo
 from data.student import Student
 from data.study_direction import StudyDirection
 from data.user import User
-from document_creator import create_student_personal_profile
+from document_creator import create_student_personal_profile, create_student_record_book, create_student_card
 from resources.receipts import EnrollsList, StudentsList
 
 
@@ -152,7 +152,12 @@ if __name__ == "__main__":
     db.session.commit()
 
     user = User.query.first()
-    create_student_personal_profile('test', user)
+    try:
+        ans = create_student_card('test', user)
+        # ans = create_student_record_book('test', user)
+        print(ans)
+    except Exception as e:
+        print(e)
 
     host = PRODUCTION_HOST if PRODUCTION else LOCAL_HOST
     app.run(host=host, port=PORT, debug=True)
