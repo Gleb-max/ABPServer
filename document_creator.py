@@ -60,7 +60,9 @@ def get_tabs(_len, data, field_name):
 
 
 def format_datetime(date: datetime):
-    return date.strftime('%d.%M.%Y')
+    if date:
+        return date.strftime('%d.%M.%Y')
+    return ' '
 
 
 def create_student_personal_profile(filename, user: User, need_pdf=True):
@@ -418,3 +420,6 @@ def create_instruct_table(filename, users: List[User], subject_name, need_pdf=Tr
         return out_file_path
 
     return input_file_path
+
+
+def create_gradebook
