@@ -227,6 +227,10 @@ class InstructTable(Resource):
 
         file_name = ''
 
+        convert_gleb_to_api = {
+            'ИТ': ''
+        }
+
         student_group = StudentsGroup.query.filter_by(id=group_id).first()
         print("group id:", group_id, "name:", student_group.name)
         if not student_group:
