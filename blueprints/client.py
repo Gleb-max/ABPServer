@@ -175,6 +175,7 @@ def add_enrollee_data():
 
     exams = request.form.get("exams")
     individual_achievements = request.form.get("individual_achievements")
+    achievement_scan = request.files.get("achievement_scan")
 
     enrollment_consent = request.files.get("enrollment_consent")
     original_or_copy = request.form.get("original_or_copy")
@@ -235,6 +236,22 @@ def add_enrollee_data():
             a = photo.save(path)
             print(a, "photo was saved", path)
             check_field_and_set("photo", enrollee, path)
+
+        print('achieve list:', individual_achievements)
+        if individual_achievements:
+            for achieve in individual_achievements:
+                new_ach = IndividualAchievement()
+                new_ach.name = achieve
+                db.session.add(new_ach)
+                db.session.commit()
+                enrollee.individual_achievement_list.append(new_ach)
+                db.session.commit()
+
+        if achievement_scan:
+            path = 'media/achievements_scan/' + str(user_id) + achievement_scan.filename
+            a = achievement_scan.save(path)
+            print(a, "achieve scan was saved", path)
+            check_field_and_set("achievements_scan", enrollee, path)
 
         if agreement_scan:
             path = 'media/agreement_scans/' + str(user_id) + agreement_scan.filename

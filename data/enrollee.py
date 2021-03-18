@@ -49,6 +49,8 @@ class Enrollee(db.Model, SerializerMixin):
                                  sa.Column('individual_achievement_id', sa.Integer,
                                            sa.ForeignKey('individual_achievement.id', ondelete='CASCADE'))
                                  )
+
+    achievements_scan = sa.Column(sa.String(length=300), nullable=True)
     individual_achievement_list = orm.relationship("IndividualAchievement",
                                                    secondary=association_table,
                                                    back_populates='enrolls', cascade="all,delete")
