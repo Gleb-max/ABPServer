@@ -69,12 +69,15 @@ class ChangeStudentInfo(Resource):
 
         if email:
             user.email = email
+            db.session.commit()
 
         if registration_address:
             user.enrollee.passport.registration_address = registration_address
+            db.session.commit()
 
         if residence_address:
             user.enrollee.passport.residence_address = residence_address
+            db.session.commit()
 
         if group_name:
             students_group = StudentsGroup.query.filter_by(name=group_name).first()
@@ -83,28 +86,36 @@ class ChangeStudentInfo(Resource):
 
             user.student.student_group = students_group
             user.enrollee.study_direction = students_group.direction
+            db.session.commit()
 
         if library_card_number:
             user.student.library_card_number = library_card_number
+            db.session.commit()
 
         if phone:
             user.enrollee.phone = phone
+            db.session.commit()
 
         if series:
             user.enrollee.passport.series = series
+            db.session.commit()
 
         if number:
             user.enrollee.passport.number = number
+            db.session.commit()
 
         if who_issued:
             user.enrollee.passport.who_issued = who_issued
+            db.session.commit()
 
         if department_code:
             user.enrollee.passport.department_code = department_code
+            db.session.commit()
 
         if when_issued:
             who_issued = datetime.strptime(when_issued, '%Y-%m-%d')
             user.enrollee.passport.when_issued = who_issued
+            db.session.commit()
 
         db.session.commit()
 
