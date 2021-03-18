@@ -238,7 +238,7 @@ def add_enrollee_data():
             check_field_and_set("photo", enrollee, path)
 
         print('achieve list:', individual_achievements)
-        if individual_achievements:
+        if individual_achievements and individual_achievements != '-':
             enrollee.individual_achievement_list.clear()
             individual_achievements = individual_achievements.split(',')
             for achieve in individual_achievements:
@@ -251,6 +251,10 @@ def add_enrollee_data():
                 db.session.commit()
                 enrollee.individual_achievement_list.append(new_ach)
                 db.session.commit()
+
+        if individual_achievements == '-':
+            enrollee.individual_achievement_list.clear()
+            db.session.commit()
 
         if achievement_scan:
             path = 'media/achievements_scan/' + str(user_id) + achievement_scan.filename

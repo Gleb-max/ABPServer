@@ -5,7 +5,7 @@ from flask_admin.contrib.sqla import ModelView
 from sqlalchemy import func, and_, case
 
 from admin.admin import ViewWithPK
-from data import faculty, enrollee_statuses, student, dean
+from data import faculty, enrollee_statuses, student, dean, subject, teacher
 from data.__all_models import *
 from blueprints import client
 from flask import Flask, render_template, redirect, abort, url_for, send_from_directory, request, make_response
@@ -42,6 +42,8 @@ def initAdmin():
     admin.add_view(ModelView(faculty.Faculty, db.session))
     admin.add_view(ModelView(exam_info.ExamInfo, db.session))
     admin.add_view(ModelView(individual_achievements.IndividualAchievement, db.session))
+    admin.add_view(ViewWithPK(subject.Subject, db.session))
+    admin.add_view(ViewWithPK(teacher.Teacher, db.session))
 
 
 @app.route("/")

@@ -22,6 +22,7 @@ class StudentsGroup(db.Model, SerializerMixin):
     direction = orm.relationship(StudyDirection, back_populates="groups")
 
     students = orm.relationship("Student", back_populates="student_group")
+    subjects = orm.relationship("Subject", back_populates="students_group")
 
     def __init__(self, name):
         self.name = name
