@@ -448,8 +448,11 @@ def create_attendance_log():
     p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
     table.cell(0, 1).vertical_alignment = WD_ALIGN_VERTICAL.CENTER
 
-    table.rows[0].cells[2].merge(table.cell(1, 17))
-    table.cell(0, 2).add_paragraph('Предмет')
+    table.rows[0].cells[2].merge(table.cell(0, 16))
+    table.cell(0, 3).add_paragraph('Предмет')
+
+    for i in range(2, 17):
+        table.cell(1, i).add_paragraph(f'{i-2}.09')
 
     # table.rows[0].cells[2].merge(table.cell(0, 3))
     # table.cell(0, 2).add_paragraph('Группа')
