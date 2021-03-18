@@ -91,6 +91,7 @@ class ChangeStudentInfo(Resource):
             user.student.library_card_number = library_card_number
             db.session.commit()
 
+        print('phone', phone)
         if phone != None:
             print(phone)
             user.enrollee.phone = phone
@@ -101,25 +102,25 @@ class ChangeStudentInfo(Resource):
             passport.series = series
             db.session.commit()
 
-        if number > 0:
+        if number != None:
             passport.number = number
             db.session.commit()
 
         if who_issued != None:
             passport.who_issued = who_issued
             db.session.commit()
-
+        print(passport.__dict__)
         print(department_code)
         if department_code > 0:
             print(department_code)
             passport.department_code = department_code
-            print(user.enrollee.passport)
+            print(user.enrollee.passport.__dict__)
             db.session.commit()
 
         print(when_issued)
         if when_issued != None:
-            who_issued = datetime.strptime(when_issued, '%Y-%m-%d')
-            passport.when_issued = who_issued
+            when_issued = datetime.strptime(when_issued, '%Y-%m-%d')
+            passport.when_issued = when_issued
             db.session.commit()
 
         db.session.commit()
