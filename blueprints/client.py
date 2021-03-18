@@ -12,6 +12,7 @@ from data.individual_achievements import IndividualAchievement
 from data.passport import Passport
 from data.school_certificate import SchoolCertificate
 from data.student import Student
+from data.students_group import StudentsGroup
 from data.study_direction import StudyDirection
 from data.user import User
 from blueprints.constants import *
@@ -451,6 +452,11 @@ def enroll_users():
 
     group_number = f'{get_abbreviation(direction.name)}{datetime.now().year}'
 
+    student_group = StudentsGroup(group_number)
+    student_group.direction = direction
+    db.session.add(student_group)
+    db.session.commit()
+
     enrolls.sort(key=lambda x: x.get_exam_total_grade(), reverse=True)
     print('to table:', enrolls)
     i = 0
@@ -460,6 +466,7 @@ def enroll_users():
         if i < len(enrolls):
             enroll_student(enrolls[i], is_budget=True, group_number=group_number)
             enrolled_users.append(enrolls[i])
+            student_group.students.append(enrolls[i].user.student)
         print(i)
         i += 1
 
@@ -467,7 +474,9 @@ def enroll_users():
     for j in range(i, len(enrolls)):
         enroll_student(enrolls[j], is_budget=False, group_number=group_number)
         enrolled_users.append(enrolls[i])
+        student_group.students.append(enrolls[i].user.student)
 
+    db.session.commit()
     print('Usert to enroll:', enrolled_users, '\ngenerating report...')
     file_path = create_order_of_admission(f'media/commands/{slugify(direction.name)}', enrolled_users, direction,
                                           group_number)

@@ -9,6 +9,7 @@ from data.enrollee import Enrollee
 import json
 
 from data.student import Student
+from data.students_group import StudentsGroup
 from data.study_direction import StudyDirection
 from data.user import User
 from parsers.receipts import parser_get_enrolles, parser_student_info
@@ -73,14 +74,15 @@ class ChangeStudentInfo(Resource):
             user.enrollee.passport.residence_address = residence_address
 
         if group_name:
-            user.stundet.group_name = group_name
-            # TODO
-            similar_student = Student.query.filter_by(group_name=group_name).first()
-            direction = similar_student.user.enrollee.study_direction
-            user.enrollee.study_direction = direction
+            students_group = StudentsGroup.query.filter_by(name=group_name).first()
+            if not students_group:
+                return make_response({'result': 'student group not found'})
+
+            user.student.student_group = students_group
+            user.enrollee.study_direction = students_group.direction
 
         if library_card_number:
-            user.stundet.library_card_number = library_card_number
+            user.student.library_card_number = library_card_number
 
         if series:
             user.passport.series = series
@@ -114,10 +116,6 @@ class StudentsList(Resource):
             direction_id = int(direction_id)
             data = db.session.query(User).join(Student).join(Enrollee).filter(
                 Enrollee.study_direction_id == direction_id).all()
-            # data = Student.query.filter(and_(
-            #     (not Student.user.enrollee),
-            #     Student.user.enrollee.direction_id == direction_id)
-            # ).all()
         else:
             data = db.session.query(User).join(Student).join(Enrollee).all()
 

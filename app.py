@@ -34,6 +34,7 @@ def initAdmin():
     admin.add_view(ViewWithPK(enrollee.Enrollee, db.session))
     admin.add_view(ViewWithPK(student.Student, db.session))
     admin.add_view(ViewWithPK(dean.Dean, db.session))
+    admin.add_view(ViewWithPK(students_group.StudentsGroup, db.session))
     admin.add_view(ModelView(passport.Passport, db.session))
     admin.add_view(ModelView(school_certificate.SchoolCertificate, db.session))
     admin.add_view(ModelView(study_direction.StudyDirection, db.session))

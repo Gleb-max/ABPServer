@@ -6,6 +6,7 @@ from sqlalchemy_serializer import SerializerMixin
 
 from sqlalchemy import orm, select, func
 from data.db_session import db
+from data.students_group import StudentsGroup
 from data import enrollee_statuses
 from data.study_direction import StudyDirection
 
@@ -19,6 +20,10 @@ class Student(db.Model, SerializerMixin):
     # Relationships
     user_id = sa.Column(sa.Integer, sa.ForeignKey('users.id'), nullable=True)
     user = orm.relationship("User", back_populates="student")
+
+    student_group_id = sa.Column(sa.Integer, sa.ForeignKey('students_group.id'))
+    student_group = orm.relationship(StudentsGroup, back_populates="students")
+
 
     # Common information
     group_number = sa.Column(sa.String(20), nullable=True)

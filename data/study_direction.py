@@ -9,7 +9,7 @@ from data.faculty import Faculty
 
 class StudyDirection(db.Model, SerializerMixin):
     __tablename__ = "study_direction"
-    serialize_rules = ( '-enrolls', )
+    serialize_rules = ( '-enrolls', '-groups')
 
     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True, unique=True)
 
@@ -18,6 +18,9 @@ class StudyDirection(db.Model, SerializerMixin):
 
     faculty = orm.relationship(Faculty, back_populates='directions')
     faculty_id = sa.Column(sa.Integer, sa.ForeignKey('faculty.id', ondelete='CASCADE'))
+
+    groups = orm.relationship("StudentsGroup", back_populates="direction")
+
 
     name = sa.Column(sa.String(100), nullable=False)
     budget_count = sa.Column(sa.SmallInteger(), nullable=True)

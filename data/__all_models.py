@@ -4,4 +4,6 @@ from . import (enrollee,
                individual_achievements,
                passport,
                school_certificate,
-               study_direction)
+               study_direction,
+               students_group,
+               student)
