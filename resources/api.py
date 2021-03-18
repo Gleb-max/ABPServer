@@ -237,7 +237,7 @@ class InstructTable(Resource):
         }
 
         student_group = StudentsGroup.query.filter_by(id=group_id).first()
-        print("group id:", group_id, "name:", student_group.name, "group_direction:")
+        print("group id:", group_id, "name:", student_group.name, "group_direction:", student_group.direction.name)
 
         if not student_group:
             return make_response({'result': 'group not found'}, 404)
@@ -247,7 +247,7 @@ class InstructTable(Resource):
 
         # взять юзеров по имени группы
         # students = Student.query.filter(Student.student_group.name == student_group.name).all()
-        student_group = StudentsGroup.filter_by(name=student_group.name).first()
+        student_group = StudentsGroup.query.filter_by(name=student_group.name).first()
 
         for st in student_group.students:
             users.append(st.user)
