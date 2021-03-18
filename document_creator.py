@@ -4,6 +4,9 @@ from docx import Document
 from docx.enum.table import WD_ALIGN_VERTICAL
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.section import WD_ORIENT, WD_SECTION
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
+from docx.table import _Cell
 from docx.shared import Inches, Cm, Pt
 
 from data.dean import Dean
@@ -452,7 +455,13 @@ def create_attendance_log():
     table.cell(0, 3).add_paragraph('Предмет')
 
     for i in range(2, 17):
-        table.cell(1, i).add_paragraph(f'{i-2}.09')
+        tc = table.cell(1, i)._tc
+        tcPr = tc.get_or_add_tcPr()
+        textDirection = OxmlElement('w:textDirection')
+        textDirection.set(qn('w:val'), "btLr")  # btLr tbRl
+        tcPr.append(textDirection)
+
+        table.cell(1, i).add_paragraph(f'{i-1}.09')
 
     # table.rows[0].cells[2].merge(table.cell(0, 3))
     # table.cell(0, 2).add_paragraph('Группа')
