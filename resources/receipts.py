@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask import make_response
 from flask_restful import abort, Resource
 from sqlalchemy import and_
@@ -93,6 +95,7 @@ class ChangeStudentInfo(Resource):
             user.passport.department_code = who_issued
 
         if when_issued:
+            who_issued = datetime.strptime(when_issued, '%Y-%m-%d')
             user.passport.when_issued = who_issued
 
         db.session.commit()
