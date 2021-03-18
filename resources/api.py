@@ -136,8 +136,21 @@ class StudentsList(Resource):
         direction_id = args["direction_id"]
         if direction_id:
             direction_id = int(direction_id)
+
+            if direction_id == 5: # ЗСИС
+                direction_id = 1 # ПМ
+            elif direction_id == 1:
+                direction_id = 2
+            elif direction_id == 4:
+                direction_id = 3
+            elif direction_id == 3:
+                direction_id = 4
+            elif direction_id == 2:
+                direction_id = 5
+
             direction = StudyDirection.query.filter_by(id=direction_id).first()
             print('direction_id:', direction.id, 'direction_name', direction.name)
+
             groups = direction.groups
             data = []
             for g in groups:
