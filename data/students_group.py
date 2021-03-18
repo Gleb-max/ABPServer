@@ -28,7 +28,7 @@ class StudentsGroup(db.Model, SerializerMixin):
 
     def __str__(self):
         if self.name:
-            return f'Группа {self.user.name}'
+            return f'Группа {self.name}'
 
         return f"<StudentsGroup>"
 
