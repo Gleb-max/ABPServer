@@ -62,7 +62,7 @@ class ChangeStudentInfo(Resource):
         department_code = args['department_code']
         when_issued = args['when_issued']
         phone = args['phone']
-        print(phone, user_id, email, residence_address, series, number)
+        print(phone, user_id, email, residence_address, series, number, department_code)
 
         user = User.query.filter_by(id=user_id).first()
         if not user:
@@ -96,7 +96,9 @@ class ChangeStudentInfo(Resource):
             db.session.commit()
 
         if phone:
+            print(phone)
             user.enrollee.phone = phone
+            print('user phone:', user.enrollee.phone)
             db.session.commit()
 
         if series:
@@ -111,6 +113,7 @@ class ChangeStudentInfo(Resource):
             user.enrollee.passport.who_issued = who_issued
             db.session.commit()
 
+        print(department_code)
         if department_code:
             print(department_code)
             user.enrollee.passport.department_code = department_code
