@@ -342,3 +342,20 @@ def create_student_card(filename, users: List[User], need_pdf=True):
         return out_file_path
 
     return input_file_path
+
+
+def create_instruct_table():
+    document = Document()
+
+    header = document.add_paragraph()
+    header.add_run(f'Инструктаж по технике безопасности по предмету {"test"}').bold = True
+    header.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+    table = document.add_table(cols=4, rows=9)
+    table.cell(0, 0).add_paragraph('№ п/п')
+    table.cell(0, 1).add_paragraph('ФИО инструктируемого')
+    table.cell(0, 2).add_paragraph('Группа')
+
+
+    upper.add_run(f'{user.student.card_number}').underline = True
+    upper.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.LEFT

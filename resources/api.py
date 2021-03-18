@@ -102,11 +102,11 @@ class ChangeStudentInfo(Resource):
             passport.who_issued = who_issued
             db.session.commit()
 
-        if department_code > 0:
+        if department_code != None:
             passport.department_code = department_code
             db.session.commit()
 
-
+        print(when_issued)
         if when_issued != None:
             when_issued = datetime.strptime(when_issued, '%Y-%m-%d')
             passport.when_issued = when_issued
