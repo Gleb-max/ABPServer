@@ -254,7 +254,7 @@ def create_student_record_book(filename, users: List[User], need_pdf=True):
     return input_file_path
 
 
-def create_student_card(filename, users: List[User], need_pdf=True):
+def create_student_card(filename, users: List[User], need_pdf=False):
     document = Document()
 
     for (ind, user) in enumerate(users):
@@ -340,6 +340,8 @@ def create_student_card(filename, users: List[User], need_pdf=True):
 
     input_file_path = f'{filename}.docx'
     document.save(input_file_path)
+    import os
+    print('path', os.path.abspath(os.getcwd()))
 
     if need_pdf:
         out_file_path = f'{filename}.pdf'
@@ -442,9 +444,11 @@ def create_attendance_log(file_name, subject_name, users:List[User], need_pdf=Tr
     table.cell(2, 0).width = Cm(1.2)
 
     table.rows[0].cells[1].merge(table.cell(1, 1))
-    p = table.cell(0, 1).add_paragraph('ФИО обучающегося')
+    p = table.cell(0, 1).add_paragraph('ФИО обучающегося \ Месяц, число')
     p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
     table.cell(0, 1).vertical_alignment = WD_ALIGN_VERTICAL.CENTER
+
+    table.rows[0].cells[2].merge(table.cell(1, 16))
 
     table.rows[0].cells[2].merge(table.cell(0, 3))
     table.cell(0, 2).add_paragraph('Группа')
