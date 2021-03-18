@@ -11,6 +11,7 @@ from data.study_direction import StudyDirection
 from datetime import datetime
 
 from data.user import User
+from docx2pdf import convert as convert_docx2pdf
 
 
 def create_order_of_admission(filename, enrolls: List[Enrollee], direction: StudyDirection, group_number):
@@ -54,14 +55,14 @@ def create_order_of_admission(filename, enrolls: List[Enrollee], direction: Stud
 
 def get_tabs(_len, data, field_name):
     data = '  ' + (data if data else ' ')
-    return data + (_len - len(field_name) - len(data)) // 10 * '\t'
+    return data + int((_len - len(field_name) - len(data)) // 10) * '\t'
 
 
 def format_datetime(date: datetime):
     return date.strftime('%d.%M.%Y')
 
 
-def create_student_personal_profile(filename, user: User):
+def create_student_personal_profile(filename, user: User, need_pdf=True):
     document = Document()
 
     section = document.sections[0]
@@ -85,7 +86,7 @@ def create_student_personal_profile(filename, user: User):
     line_len = 108
 
     par = document.add_paragraph()
-    study_direction = user.enrollee.study_direction
+    study_direction = user.student.student_group.direction
 
     par.add_run('Факультет')
     facult = study_direction.faculty.name
@@ -94,7 +95,7 @@ def create_student_personal_profile(filename, user: User):
     spec = study_direction.name
     par.add_run(get_tabs(line_len, spec, 'Специальность') + '\n').underline = True
     par.add_run('Группа')
-    group = user.student.group_number
+    group = user.student.student_group.name
     par.add_run(get_tabs(line_len // 1.5, group, 'Группа')).underline = True
 
     par.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.LEFT
@@ -109,16 +110,20 @@ def create_student_personal_profile(filename, user: User):
     cur_cell = tab.cell(0, 0)
     cur_cell.width = Inches(6.5)
     par = cur_cell.add_paragraph()
-    par.add_run('Основа')
+    par.add_run('Основа')  # TODO filing
     small_line = '\t\t\t\t\t'
     par.add_run(small_line).underline = True
+
     par.add_run(', личное дело №')
     par.add_run(f'{personal_debt}\n').underline = True
+
     par.add_run('ФИО')
     fio = f'  {user.name} {user.surname} {user.last_name}'
     par.add_run(get_tabs(line_len, fio, 'ФИО') + '\n').underline = True
+
     par.add_run('Дата рождения')
     par.add_run(get_tabs(line_len, format_datetime(user.enrollee.birthday), 'Дата рождения') + '\n').underline = True
+
     par.add_run('Место рождения')
     par.add_run(get_tabs(line_len, user.enrollee.birth_place, 'Место рождения') + '\n').underline = True
     par.add_run('Паспорт')
@@ -155,6 +160,11 @@ def create_student_personal_profile(filename, user: User):
 
     input_file_path = f'{filename}.docx'
     document.save(input_file_path)
+
+    if need_pdf:
+        out_file_path = f'{filename}.pdf'
+        convert_docx2pdf(input_file_path, out_file_path)
+        return out_file_path
 
     return input_file_path
 
@@ -205,7 +215,6 @@ def create_student_record_book(filename, user: User):
         run = paragraph.add_run()
         picture = run.add_picture(img, width=Inches(1.5), height=Inches(1.5))
 
-
     workers = Dean.query.filter_by(faculty_pk=directional.id)
 
     prorector = workers.filter(Dean.post == 'Проректор').first()
@@ -220,6 +229,8 @@ def create_student_record_book(filename, user: User):
 
     input_file_path = f'{filename}.docx'
     document.save(input_file_path)
+
+
 
     return input_file_path
 
@@ -276,9 +287,8 @@ def create_student_card(filename, user: User):
     paragraph.add_run('Факультет')
     paragraph.add_run(get_tabs(line_len, faculty, 'Факультет') + '\n').underline = True
     paragraph.add_run('Группа')
-    paragraph.add_run(get_tabs(line_len, user.student.group_number, 'Группа') + '\n\n').underline = True
+    paragraph.add_run(get_tabs(line_len, user.student.student_group.name, 'Группа') + '\n\n').underline = True
     paragraph.add_run('Проректор по учебной работе' + '\n\n')
-
 
     # 2 col
     current_cell = table.cell(0, 1)
@@ -295,17 +305,16 @@ def create_student_card(filename, user: User):
         run.font.size = Pt(font_size)
 
         paragraph.add_run('/')
-        run = paragraph.add_run(f'{digids + i + 1}')
+        run = paragraph.add_run(f'{digids + i + 1} ')
         run.underline = True
         run.font.size = Pt(font_size)
-        run = paragraph.add_run(' г. является студентом')
+        run = paragraph.add_run('г. является студентом ')
         run.font.size = Pt(font_size)
         run = paragraph.add_run(f'{i + 1}')
         run.underline = True
         run.font.size = Pt(font_size)
         run = paragraph.add_run(' курса\n\n')
         run.font.size = Pt(font_size)
-
 
     input_file_path = f'{filename}.docx'
     document.save(input_file_path)

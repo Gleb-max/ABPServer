@@ -26,21 +26,19 @@ class Student(db.Model, SerializerMixin):
 
 
     # Common information
-    group_number = sa.Column(sa.String(20), nullable=True)
     card_number = sa.Column(sa.Integer(), nullable=True)
     record_book_number = sa.Column(sa.Integer(), nullable=True)
     library_card_number = sa.Column(sa.Integer(), nullable=True)
     enrollment_date = sa.Column(sa.Date(), nullable=True)
     expiration_date = sa.Column(sa.Date(), nullable=True)
 
-    def __init__(self, group_number=None):
+    def __init__(self):
         base_number = 100
         library_base_number = 1000
         self.card_number = base_number + Student.query.count() + 1
         self.library_card_number = library_base_number + Student.query.count() + 1
         self.enrollment_date = datetime.now().date()
         self.expiration_date = datetime.now().date() + timedelta(days=365 * 4)
-        self.group_number = group_number
 
     def __str__(self):
         if self.user:

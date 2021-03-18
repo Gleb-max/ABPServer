@@ -464,7 +464,7 @@ def enroll_users():
     # Зачислить бюджетников
     while i < direction.budget_count:
         if i < len(enrolls):
-            enroll_student(enrolls[i], is_budget=True, group_number=group_number)
+            enroll_student(enrolls[i], is_budget=True)
             enrolled_users.append(enrolls[i])
             student_group.students.append(enrolls[i].user.student)
         print(i)
@@ -472,7 +472,7 @@ def enroll_users():
 
     # Зачислить платников
     for j in range(i, len(enrolls)):
-        enroll_student(enrolls[j], is_budget=False, group_number=group_number)
+        enroll_student(enrolls[j], is_budget=False)
         enrolled_users.append(enrolls[i])
         student_group.students.append(enrolls[i].user.student)
 

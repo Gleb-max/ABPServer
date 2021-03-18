@@ -1,6 +1,7 @@
+import os
 from datetime import datetime
 
-from flask import make_response
+from flask import make_response, send_from_directory
 from flask_restful import abort, Resource
 from sqlalchemy import and_
 
@@ -12,8 +13,8 @@ from data.student import Student
 from data.students_group import StudentsGroup
 from data.study_direction import StudyDirection
 from data.user import User
-from parsers.receipts import parser_get_enrolles, parser_student_info
-
+from parsers.receipts import parser_get_enrolles, parser_student_info, parser_get_student_dossier
+from document_creator import *
 
 class EnrollsList(Resource):
     def get(self):
@@ -85,20 +86,20 @@ class ChangeStudentInfo(Resource):
             user.student.library_card_number = library_card_number
 
         if series:
-            user.passport.series = series
+            user.enrollee.passport.series = series
 
         if number:
-            user.passport.number = number
+            user.enrollee.passport.number = number
 
         if who_issued:
-            user.passport.who_issued = who_issued
+            user.enrollee.passport.who_issued = who_issued
 
         if department_code:
-            user.passport.department_code = who_issued
+            user.enrollee.passport.department_code = who_issued
 
         if when_issued:
             who_issued = datetime.strptime(when_issued, '%Y-%m-%d')
-            user.passport.when_issued = who_issued
+            user.enrollee.passport.when_issued = who_issued
 
         db.session.commit()
 
@@ -126,3 +127,21 @@ class StudentsList(Resource):
             answer.append(user_dict)
 
         return json.dumps({'students': answer})
+
+
+class StudentPersonalDossier(Resource):
+    def get(self):
+        answer = []
+
+        args = parser_get_student_dossier.parse_args()
+        user_id = args["user_id"]
+        user = User.query.filter_by(id=user_id).first()
+
+        if not user or not user.student:
+            return make_response({'result': 'student not found'}, 404)
+
+        path = f'media/dossiers/{user.id}_report'
+        file_path = create_student_personal_profile(path, user, need_pdf=True)
+        print(file_path)
+        # return send_from_directory(filename=file_path, directory=os.path.abspath(os.getcwd()),as_attachment=True, cache_timeout=0)
+        return file_path

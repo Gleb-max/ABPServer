@@ -40,7 +40,7 @@ def send_mail(receiver, header, text):
     print(f'mail to {receiver} sended')
 
 
-def enroll_student(enrollee: Enrollee, is_budget=False, group_number=None):
+def enroll_student(enrollee: Enrollee, is_budget=False):
     enrollee.consideration_stage = enrollee_statuses.STAGE_RECEIVED
     enrollee.is_budgetary = is_budget
     db.session.commit()
@@ -63,5 +63,4 @@ def enroll_student(enrollee: Enrollee, is_budget=False, group_number=None):
               f'С уважением,\n' + \
               f'приемная комиссия СГУ им. Ф.Лимонадова'
               )
-# enroll_student(Enrollee.query.first(), is_budget=True, group_number="Number")
 

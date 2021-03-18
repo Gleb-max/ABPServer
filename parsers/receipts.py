@@ -30,3 +30,8 @@ parser_student_info.add_argument("number", required=False, type=int)
 parser_student_info.add_argument("who_issued", required=False, type=str)
 parser_student_info.add_argument("department_code", required=False, type=int)
 parser_student_info.add_argument("when_issued", required=False, type=str)
+
+
+parser_get_student_dossier = reqparse.RequestParser()
+parser_get_student_dossier.add_argument("user_id", required=True, type=int)
+
