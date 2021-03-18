@@ -450,6 +450,10 @@ def create_attendance_log():
     p = table.cell(0, 1).add_paragraph('ФИО обучающегося \ Месяц, число')
     p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
     table.cell(0, 1).vertical_alignment = WD_ALIGN_VERTICAL.CENTER
+    section = document.sections[-1]
+    section.top_margin = Cm(0.7)
+    section.left_margin = Cm(0.5)
+    section.right_margin = Cm(0.5)
 
     table.rows[0].cells[2].merge(table.cell(0, 16))
     table.cell(0, 3).add_paragraph('Предмет')
@@ -462,6 +466,7 @@ def create_attendance_log():
         tcPr.append(textDirection)
 
         table.cell(1, i).add_paragraph(f'{i-1}.09')
+        table.cell(1, i).width = Cm(0.7)
 
     # table.rows[0].cells[2].merge(table.cell(0, 3))
     # table.cell(0, 2).add_paragraph('Группа')
