@@ -35,6 +35,13 @@ class Student(db.Model, SerializerMixin):
     def __init__(self):
         base_number = 100
         library_base_number = 1000
+
+        try:
+            base_number_record_book_number = 1000
+            self.record_book_number = base_number_record_book_number + Student.query.count() + 1
+        except Exception as e:
+            print(e)
+
         self.card_number = base_number + Student.query.count() + 1
         self.library_card_number = library_base_number + Student.query.count() + 1
         self.enrollment_date = datetime.now().date()
