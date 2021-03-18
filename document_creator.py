@@ -163,160 +163,182 @@ def create_student_personal_profile(filename, user: User, need_pdf=True):
 
     if need_pdf:
         out_file_path = f'{filename}.pdf'
+        import pythoncom
+        pythoncom.CoInitializeEx(0)
         convert_docx2pdf(input_file_path, out_file_path)
         return out_file_path
 
     return input_file_path
 
 
-def create_student_record_book(filename, user: User):
+def create_student_record_book(filename, users: List[User], need_pdf=True):
     document = Document()
 
-    section = document.sections[0]
-    section.orientation = WD_ORIENT.LANDSCAPE
-    # crutch to rotate
-    new_width, new_height = section.page_height, section.page_width
-    section.page_width = new_width
-    section.page_height = new_height
+    for ind, user in enumerate(users):
+        # section = document.add_section(WD_SECTION.NEW_PAGE)
+        section = document.sections[-1]
+        section.top_margin = Cm(0.7)
+        section.orientation = WD_ORIENT.LANDSCAPE
+        # crutch to rotate
+        new_width, new_height = section.page_height, section.page_width
+        section.page_width = new_width
+        section.page_height = new_height
 
-    upper = document.add_paragraph('Зачетная книжка №')
-    upper.add_run(f'{user.student.record_book_number}').underline = True
-    upper.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        upper = document.add_paragraph('Зачетная книжка №')
+        upper.add_run(f'{user.student.record_book_number}').underline = True
+        upper.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
-    line_len = 60
+        line_len = 60
 
-    table = document.add_table(rows=1, cols=2)
-    table.autofit = False
-    table.allow_autofit = False
-    # par = document.add_paragraph()
-    cur_cell = table.cell(0, 1)
-    cur_cell.width = Inches(6.5)
-    par = cur_cell.add_paragraph()
-    par.add_run('ФИО')
-    fio = f'  {user.name} {user.surname} {user.last_name}'
-    par.add_run(get_tabs(line_len, fio, 'ФИО') + '\n').underline = True
-    par.add_run('Факультет')
-    directional = user.enrollee.study_direction
-    par.add_run(get_tabs(line_len, directional.faculty.name, 'Факультет') + '\n').underline = True
-    par.add_run('Специальность')
-    par.add_run(get_tabs(line_len, directional.name, 'Специальность') + '\n').underline = True
-    par.add_run(get_tabs(line_len, '', '') + '\n\n').underline = True
-    par.add_run(f'Поступил в {user.student.enrollment_date.year} году')
+        table = document.add_table(rows=1, cols=2)
+        table.autofit = False
+        table.allow_autofit = False
+        # par = document.add_paragraph()
+        cur_cell = table.cell(0, 1)
+        cur_cell.width = Inches(6.5)
+        par = cur_cell.add_paragraph()
+        par.add_run('ФИО')
+        fio = f'  {user.name} {user.surname} {user.last_name}'
+        par.add_run(get_tabs(line_len, fio, 'ФИО') + '\n').underline = True
+        par.add_run('Факультет')
+        directional = user.enrollee.study_direction
+        par.add_run(get_tabs(line_len, directional.faculty.name, 'Факультет') + '\n').underline = True
+        par.add_run('Специальность')
+        par.add_run(get_tabs(line_len, directional.name, 'Специальность') + '\n').underline = True
+        par.add_run(get_tabs(line_len, '', '') + '\n\n').underline = True
+        par.add_run(f'Поступил в {user.student.enrollment_date.year} году')
 
-    if user.enrollee.photo:
-        img_path = user.enrollee.photo
-    else:
-        img_path = 'default_photo.jpg'
+        if user.enrollee.photo:
+            img_path = user.enrollee.photo
+        else:
+            img_path = 'default_photo.jpg'
 
-    with open(img_path, 'rb') as img:
-        cur_cell = table.cell(0, 0)
-        cur_cell.width = Cm(6.2)
-        paragraph = cur_cell.paragraphs[0]
-        run = paragraph.add_run()
-        picture = run.add_picture(img, width=Inches(1.5), height=Inches(1.5))
+        with open(img_path, 'rb') as img:
+            cur_cell = table.cell(0, 0)
+            cur_cell.width = Cm(6.2)
+            paragraph = cur_cell.paragraphs[0]
+            run = paragraph.add_run()
+            picture = run.add_picture(img, width=Inches(1.5), height=Inches(1.5))
 
-    workers = Dean.query.filter_by(faculty_pk=directional.id)
+        workers = Dean.query.filter_by(faculty_pk=directional.id)
 
-    prorector = workers.filter(Dean.post == 'Проректор').first()
-    dean = workers.filter(Dean.post == 'Декан').first()
+        prorector = workers.filter(Dean.post == 'Проректор').first()
+        dean = workers.filter(Dean.post == 'Декан').first()
 
-    paragraph = document.add_paragraph()
-    fio = f'{prorector.user.surname} {prorector.user.name[:1]}.{prorector.user.last_name[:1]}.'
-    paragraph.add_run(f'\n\nПроректор по учебной работе {fio}\n\n')
+        paragraph = document.add_paragraph()
+        fio = f'{prorector.user.surname} {prorector.user.name[:1]}.{prorector.user.last_name[:1]}.'
+        paragraph.add_run(f'\n\nПроректор по учебной работе {fio}\n\n')
 
-    fio = f'{dean.user.surname} {dean.user.name[:1]}.{dean.user.last_name[:1]}.'
-    paragraph.add_run(f'Проректор по учебной работе {fio}\n\n')
+        fio = f'{dean.user.surname} {dean.user.name[:1]}.{dean.user.last_name[:1]}.'
+        paragraph.add_run(f'Проректор по учебной работе {fio}\n')
+
+        if ind % 2 == 0:
+            paragraph.add_run('-' * 160 + '\n')
 
     input_file_path = f'{filename}.docx'
     document.save(input_file_path)
 
-
+    if need_pdf:
+        out_file_path = f'{filename}.pdf'
+        import pythoncom
+        pythoncom.CoInitializeEx(0)
+        convert_docx2pdf(input_file_path, out_file_path)
+        return out_file_path
 
     return input_file_path
 
 
-def create_student_card(filename, user: User):
+def create_student_card(filename, users: List[User], need_pdf=True):
     document = Document()
 
-    section = document.sections[0]
-    section.orientation = WD_ORIENT.LANDSCAPE
-    # crutch to rotate
-    new_width, new_height = section.page_height, section.page_width
-    section.page_width = new_width
-    section.page_height = new_height
+    for (ind, user) in enumerate(users):
+        section = document.sections[-1]
+        section.top_margin = Cm(0.7)
+        section.orientation = WD_ORIENT.LANDSCAPE
+        # crutch to rotate
+        new_width, new_height = section.page_height, section.page_width
+        section.page_width = new_width
+        section.page_height = new_height
 
-    table = document.add_table(rows=1, cols=2, style='Table Grid')
-    table.autofit = False
-    table.allow_autofit = False
+        table = document.add_table(rows=1, cols=2, style='Table Grid')
+        table.autofit = False
+        table.allow_autofit = False
 
-    # 1 col
-    current_cell = table.cell(0, 0)
-    current_cell.width = Cm(11)
-    upper = current_cell.add_paragraph('Студенческий билет №')
-    upper.add_run(f'{user.student.card_number}').underline = True
-    upper.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        # 1 col
+        current_cell = table.cell(0, 0)
+        current_cell.width = Cm(11)
+        upper = current_cell.add_paragraph('Студенческий билет №')
+        upper.add_run(f'{user.student.card_number}').underline = True
+        upper.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.LEFT
 
-    min_tabble = current_cell.add_table(rows=1, cols=2)
-    # min_tabble.autofit = True
-    # min_tabble.allow_autofit = True
+        min_tabble = current_cell.add_table(rows=1, cols=2)
+        # min_tabble.autofit = True
+        # min_tabble.allow_autofit = True
 
-    # photo
-    min_tabble.cell(0, 0).width = Cm(4)
-    paragraph = min_tabble.cell(0, 0).paragraphs[0]
-    run = paragraph.add_run('\n')
-    if user.enrollee.photo:
-        img_path = user.enrollee.photo
-    else:
-        img_path = 'default_photo.jpg'
+        # photo
+        min_tabble.cell(0, 0).width = Cm(4)
+        paragraph = min_tabble.cell(0, 0).paragraphs[0]
+        run = paragraph.add_run('\n')
+        if user.enrollee.photo:
+            img_path = user.enrollee.photo
+        else:
+            img_path = 'default_photo.jpg'
 
-    with open(img_path, 'rb') as img:
-        picture = run.add_picture(img, width=Inches(1.5), height=Inches(1.5))
+        with open(img_path, 'rb') as img:
+            picture = run.add_picture(img, width=Inches(1.5), height=Inches(1.5))
 
-    paragraph.add_run('\n\nДекан факультета')
+        paragraph.add_run('\n\nДекан факультета')
 
-    min_tabble.cell(0, 1).width = Cm(5.5)
-    paragraph = min_tabble.cell(0, 1).add_paragraph()
-    line_len = 35
-    paragraph.add_run('Фамилия')
-    paragraph.add_run(get_tabs(line_len, user.surname, 'Фамилия') + '\n').underline = True
-    paragraph.add_run('Имя')
-    paragraph.add_run(get_tabs(line_len, user.name, 'Имя') + '\n').underline = True
-    paragraph.add_run('Отчество')
-    paragraph.add_run(get_tabs(line_len, user.last_name, 'Отчество  ') + '\n').underline = True
-    faculty = user.enrollee.study_direction.faculty.name
-    paragraph.add_run('Факультет')
-    paragraph.add_run(get_tabs(line_len, faculty, 'Факультет') + '\n').underline = True
-    paragraph.add_run('Группа')
-    paragraph.add_run(get_tabs(line_len, user.student.student_group.name, 'Группа') + '\n\n').underline = True
-    paragraph.add_run('Проректор по учебной работе' + '\n\n')
+        min_tabble.cell(0, 1).width = Cm(5.5)
+        paragraph = min_tabble.cell(0, 1).add_paragraph()
+        line_len = 35
+        paragraph.add_run('Фамилия')
+        paragraph.add_run(get_tabs(line_len, user.surname, 'Фамилия') + '\n').underline = True
+        paragraph.add_run('Имя')
+        paragraph.add_run(get_tabs(line_len, user.name, 'Имя') + '\n').underline = True
+        paragraph.add_run('Отчество')
+        paragraph.add_run(get_tabs(line_len, user.last_name, 'Отчество  ') + '\n').underline = True
+        faculty = user.enrollee.study_direction.faculty.name
+        paragraph.add_run('Факультет')
+        paragraph.add_run(get_tabs(line_len, faculty, 'Факультет') + '\n').underline = True
+        paragraph.add_run('Группа')
+        paragraph.add_run(get_tabs(line_len, user.student.student_group.name, 'Группа') + '\n\n').underline = True
+        paragraph.add_run('Проректор по учебной работе' + '\n\n')
 
-    # 2 col
-    current_cell = table.cell(0, 1)
-    start_year = user.student.enrollment_date.year
-    digids = start_year % 100
-    paragraph = current_cell.add_paragraph('\n')
+        # 2 col
+        current_cell = table.cell(0, 1)
+        start_year = user.student.enrollment_date.year
+        digids = start_year % 100
+        paragraph = current_cell.add_paragraph('\n')
 
-    font_size = 15
-    for i in range(5):
-        run = paragraph.add_run(f'В 20')
-        run.font.size = Pt(font_size)
-        run = paragraph.add_run(f'{digids + i}')
-        run.underline = True
-        run.font.size = Pt(font_size)
+        font_size = 15
+        for i in range(5):
+            run = paragraph.add_run(f'В 20')
+            run.font.size = Pt(font_size)
+            run = paragraph.add_run(f'{digids + i}')
+            run.underline = True
+            run.font.size = Pt(font_size)
 
-        paragraph.add_run('/')
-        run = paragraph.add_run(f'{digids + i + 1} ')
-        run.underline = True
-        run.font.size = Pt(font_size)
-        run = paragraph.add_run('г. является студентом ')
-        run.font.size = Pt(font_size)
-        run = paragraph.add_run(f'{i + 1}')
-        run.underline = True
-        run.font.size = Pt(font_size)
-        run = paragraph.add_run(' курса\n\n')
-        run.font.size = Pt(font_size)
+            paragraph.add_run('/')
+            run = paragraph.add_run(f'{digids + i + 1} ')
+            run.underline = True
+            run.font.size = Pt(font_size)
+            run = paragraph.add_run('г. является студентом ')
+            run.font.size = Pt(font_size)
+            run = paragraph.add_run(f'{i + 1}')
+            run.underline = True
+            run.font.size = Pt(font_size)
+            run = paragraph.add_run(' курса\n\n')
+            run.font.size = Pt(font_size)
 
     input_file_path = f'{filename}.docx'
     document.save(input_file_path)
+
+    if need_pdf:
+        out_file_path = f'{filename}.pdf'
+        import pythoncom
+        pythoncom.CoInitializeEx(0)
+        convert_docx2pdf(input_file_path, out_file_path)
+        return out_file_path
 
     return input_file_path

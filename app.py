@@ -148,15 +148,13 @@ api.add_resource(EnrollsList, "/api/v2/enrolls")
 api.add_resource(StudentsList, "/api/v2/students")
 api.add_resource(ChangeStudentInfo, "/api/v2/change_student_info")
 api.add_resource(StudentPersonalDossier, "/api/v2/get_student_dossier")
+api.add_resource(StudentCard, "/api/v2/get_student_cards")
+api.add_resource(StudentRecordBook, "/api/v2/get_record_books")
 
 if __name__ == "__main__":
     # db.drop_all()
     db.create_all()
     db.session.commit()
-
-
-
-    convert_docx2pdf('media/dossiers/1_report.docx', 'media/dossiers/1_report.pdf')
 
     # user = User.query.first()
 

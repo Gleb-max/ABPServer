@@ -24,6 +24,7 @@ parser_student_info.add_argument("registration_address", required=False, type=st
 parser_student_info.add_argument("residence_address", required=False, type=str)
 parser_student_info.add_argument("group_name", required=False, type=str)
 parser_student_info.add_argument("library_card_number", required=False, type=int)
+parser_student_info.add_argument("phone", required=False, type=int)
 # passport
 parser_student_info.add_argument("series", required=False, type=int)
 parser_student_info.add_argument("number", required=False, type=int)
@@ -34,4 +35,9 @@ parser_student_info.add_argument("when_issued", required=False, type=str)
 
 parser_get_student_dossier = reqparse.RequestParser()
 parser_get_student_dossier.add_argument("user_id", required=True, type=int)
+
+
+parser_get_student_card = reqparse.RequestParser()
+parser_get_student_card.add_argument("user_id", required=False, type=int)
+parser_get_student_card.add_argument('direction_id', required=False, type=int)
 

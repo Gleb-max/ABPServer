@@ -13,7 +13,8 @@ from data.student import Student
 from data.students_group import StudentsGroup
 from data.study_direction import StudyDirection
 from data.user import User
-from parsers.receipts import parser_get_enrolles, parser_student_info, parser_get_student_dossier
+from parsers.receipts import parser_get_enrolles, parser_student_info, parser_get_student_dossier, \
+    parser_get_student_card
 from document_creator import *
 
 class EnrollsList(Resource):
@@ -60,6 +61,7 @@ class ChangeStudentInfo(Resource):
         who_issued = args['who_issued']
         department_code = args['department_code']
         when_issued = args['when_issued']
+        phone = args['phone']
 
         user = User.query.filter_by(id=user_id).first()
         if not user:
@@ -85,6 +87,9 @@ class ChangeStudentInfo(Resource):
         if library_card_number:
             user.student.library_card_number = library_card_number
 
+        if phone:
+            user.enrollee.phone = phone
+
         if series:
             user.enrollee.passport.series = series
 
@@ -95,7 +100,7 @@ class ChangeStudentInfo(Resource):
             user.enrollee.passport.who_issued = who_issued
 
         if department_code:
-            user.enrollee.passport.department_code = who_issued
+            user.enrollee.passport.department_code = department_code
 
         if when_issued:
             who_issued = datetime.strptime(when_issued, '%Y-%m-%d')
@@ -131,8 +136,6 @@ class StudentsList(Resource):
 
 class StudentPersonalDossier(Resource):
     def get(self):
-        answer = []
-
         args = parser_get_student_dossier.parse_args()
         user_id = args["user_id"]
         user = User.query.filter_by(id=user_id).first()
@@ -143,5 +146,52 @@ class StudentPersonalDossier(Resource):
         path = f'media/dossiers/{user.id}_report'
         file_path = create_student_personal_profile(path, user, need_pdf=True)
         print(file_path)
-        # return send_from_directory(filename=file_path, directory=os.path.abspath(os.getcwd()),as_attachment=True, cache_timeout=0)
         return file_path
+        # return send_from_directory(filename=file_path, directory=os.path.abspath(os.getcwd()),as_attachment=True, cache_timeout=0)
+
+
+class StudentRecordBook(Resource):
+    def get(self):
+        args = parser_get_student_card.parse_args()
+        user_id = args["user_id"]
+        direction_id = args['direction_id']
+        file_name = ''
+        users_data = []
+
+        if user_id:
+            user = User.query.filter_by(id=user_id).first()
+            users_data = [user]
+            file_name = f'user_{user_id}'
+        elif direction_id:
+            users_data = db.session.query(User).join(Student).join(Enrollee).filter(
+                Enrollee.study_direction_id == direction_id).all()
+            file_name = f'direction_{direction_id}'
+
+        path = f'media/student_record_books/{file_name}_report'
+        file_path = create_student_record_book(path, users_data, need_pdf=True)
+        print(file_path)
+        return file_path
+
+
+class StudentCard(Resource):
+    def get(self):
+        args = parser_get_student_card.parse_args()
+        user_id = args["user_id"]
+        direction_id = args['direction_id']
+        file_name = ''
+        users_data = []
+
+        if user_id:
+            user = User.query.filter_by(id=user_id).first()
+            users_data = [user]
+            file_name = f'user_{user_id}'
+        elif direction_id:
+            users_data = db.session.query(User).join(Student).join(Enrollee).filter(
+                Enrollee.study_direction_id == direction_id).all()
+            file_name = f'direction_{direction_id}'
+
+        path = f'media/student_cards/{file_name}_report'
+        file_path = create_student_card(path, users_data, need_pdf=True)
+        print(file_path)
+        return file_path
+
