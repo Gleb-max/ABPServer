@@ -240,7 +240,11 @@ def add_enrollee_data():
         print('achieve list:', individual_achievements)
         if individual_achievements:
             enrollee.individual_achievement_list.clear()
+            individual_achievements = individual_achievements.split(',')
             for achieve in individual_achievements:
+                if not achieve:
+                    print(achieve, 'is not achieve')
+                    continue
                 new_ach = IndividualAchievement()
                 new_ach.name = achieve
                 db.session.add(new_ach)

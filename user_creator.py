@@ -39,7 +39,7 @@ def fill_user(user_id):
         'certificate_number': 213 * random.randint(1,30),
         'is_budgetary': 'true',
         'original_or_copy': 'true', # if random.randint(0, 1) else 'false',
-        'individual_achievements': ['ГТО']
+        'individual_achievements': 'ГТО'
     }
 
     response = requests.request("POST", url, data=body, files=files)
