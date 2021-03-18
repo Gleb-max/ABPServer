@@ -133,7 +133,7 @@ class StudentsList(Resource):
 
         args = parser_get_enrolles.parse_args()
         direction_id = args["direction_id"]
-
+        print(direction_id)
         if direction_id:
             direction_id = int(direction_id)
             data = db.session.query(User).join(Student).join(Enrollee).filter(
@@ -143,6 +143,7 @@ class StudentsList(Resource):
 
         for user in data:
             enrollee_dict = user.enrollee.to_dict()
+            print(user.name, user.enrollee.study_direction.id)
             user_dict = user.to_dict()
             user_dict.update(enrollee_dict)
             answer.append(user_dict)
