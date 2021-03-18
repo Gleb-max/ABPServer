@@ -207,7 +207,7 @@ class StudentCard(Resource):
             file_name = f'direction_{direction_id}'
 
         path = f'media/student_cards/{file_name}_report'
-        file_path = create_student_card(path, users_data, need_pdf=True)
+        file_path = create_student_card(path, users_data, need_pdf=False)
         print(file_path)
         return file_path
 
