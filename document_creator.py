@@ -4,6 +4,7 @@ from docx import Document
 from docx.enum.table import WD_ALIGN_VERTICAL
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.section import WD_ORIENT, WD_SECTION
+from data.students_group import StudentsGroup
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.table import _Cell
@@ -436,15 +437,24 @@ def create_instruct_table(filename, users: List[User], subject_name, need_pdf=Fa
     return input_file_path
 
 
-def create_attendance_log():
+def create_attendance_log(file_name, users: List[User], group: StudentsGroup):
     document = Document()
+
+    section = document.sections[0]
+    section.orientation = WD_ORIENT.LANDSCAPE
+    # crutch to rotate
+    new_width, new_height = section.page_height, section.page_width
+    section.page_width = new_width
+    section.page_height = new_height
 
     header = document.add_paragraph()
     header.add_run(f'Журнал посещаемости группы').bold = True
-    header.add_run(f'  {"subject_name"} ').underline = True
+    header.add_run(f'  {group.name} ').underline = True
     header.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
-    table = document.add_table(cols=17, rows=10 + 2, style='Table Grid')
+    table = document.add_table(cols=17, rows=len(users) + 2, style='Table Grid')
+    table.autofit = False
+    table.allow_autofit = False
 
     table.rows[0].cells[0].merge(table.cell(1, 0))
     table.cell(0, 0).add_paragraph('№\nп/п')
@@ -452,78 +462,39 @@ def create_attendance_log():
     table.cell(2, 0).width = Cm(1.2)
 
     table.rows[0].cells[1].merge(table.cell(1, 1))
-    p = table.cell(0, 1).add_paragraph('ФИО обучающегося \ Месяц, число')
+
+    p = table.cell(0, 1).add_paragraph('Месяц, число\n\n'
+                                       '\\ \n\n'
+                                       'ФИО обучающегося \n\n')
     table.cell(0, 1).width = Cm(5)
     table.cell(0, 2).width = Cm(5)
-    p.width = Cm(5)
     p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
     table.cell(0, 1).vertical_alignment = WD_ALIGN_VERTICAL.CENTER
     section = document.sections[-1]
     section.top_margin = Cm(0.7)
-    section.left_margin = Cm(1.2)
+    section.left_margin = Cm(0.7)
     section.right_margin = Cm(1.2)
 
     table.rows[0].cells[2].merge(table.cell(0, 16))
-    table.cell(0, 3).add_paragraph('Предмет')
+    p = table.cell(0, 3).add_paragraph('Предмет')
+    run = p.add_run(group.direction.name)
+    run.underline = True
 
-    for i in range(2, 17):
-        table.cell(1, i).add_paragraph(f'{i - 1}.09')
+    table.cell(0, 3).height = Cm(15)
+
+    for i in range(2, 17):  # rows
+        table.cell(1, i).add_paragraph(f'.     {i - 1}.09\n')
         tc = table.cell(1, i)._tc
         tcPr = tc.get_or_add_tcPr()
         textDirection = OxmlElement('w:textDirection')
         textDirection.set(qn('w:val'), "btLr")  # btLr tbRl
         tcPr.append(textDirection)
 
-        table.cell(1, i).height = Cm(2)
-        table.cell(1, i).width = Cm(0.7)
+    for ind, user in enumerate(users, 2):
+        table.cell(ind, 0).add_paragraph(str(ind - 1))
+        table.cell(ind, 1).add_paragraph(f'{user.name} {user.surname} {user.last_name}')
 
-    # table.rows[0].cells[2].merge(table.cell(0, 3))
-    # table.cell(0, 2).add_paragraph('Группа')
-    # table.cell(1, 2).add_paragraph('Дата инструктажа')
-    # table.cell(1, 3).add_paragraph('Подпись')
-
-    table.autofit = False
-    table.allow_autofit = False
-    norm_date = lambda x: x.strftime('%d.%m.%Y')
-
-    # for ind, user in enumerate(users, 2):
-    #     numb_cell = table.cell(ind, 0)
-    #     numb_cell.width = Cm(1.2)
-    #     p = numb_cell.add_paragraph(str(ind - 1))
-    #     p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    #     numb_cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
-    #
-    #     fio_cell = table.cell(ind, 1)
-    #     fio_cell.width = Inches(2.6)
-    #     p = fio_cell.add_paragraph(f'{user.name} {user.surname} {user.last_name}')
-    #     p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    #     fio_cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
-    #
-    #     date_cell = table.cell(ind, 2)
-    #     date_cell.width = Inches(1.3)
-    #
-    #     if user.student:
-    #         p = date_cell.add_paragraph(f'{norm_date(user.student.enrollment_date)}')
-    #         p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    #         date_cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
-    #
-    #     podp_cell = table.cell(ind, 3)
-    #     podp_cell.width = Inches(1.3)
-
-    par = document.add_paragraph("\n\nИнструктаж провел")
-    par.add_run('\t\t\t\t\t\t').underline = True
-    par.add_run('\t').underline = False
-    par.add_run('\t\t\t').underline = True
-    par = document.add_paragraph()
-    par.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-    run = par.add_run('Дата, подпись')
-    font = run.font
-    font.size = Pt(8)
-
-    input_file_path = f'{"123"}.docx'
+    input_file_path = f'{file_name}.docx'
     document.save(input_file_path)
 
-
     return input_file_path
-
-create_attendance_log()

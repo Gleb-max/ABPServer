@@ -235,3 +235,27 @@ class InstructTable(Resource):
 
         return file_path
 
+
+class AttendanceTable(Resource):
+    def get(self):
+        args = parser_instruct_table.parse_args()
+        group_id = args['group_id']
+
+        file_name = ''
+
+        student_group = StudentsGroup.query.filter_by(id=group_id).first()
+        if not student_group:
+            return make_response({'result': 'group not found'}, 404)
+
+        subject_name = student_group.direction.name
+        users = []
+        for st in student_group.students:
+            users.append(st.user)
+
+        file_name = f'attendence_table_{student_group.id}'
+
+        path = f'media/instruct_tables/{file_name}_report'
+        file_path = create_attendance_log(path, users, student_group)
+
+        return file_path
+
