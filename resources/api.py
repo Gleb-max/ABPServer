@@ -62,6 +62,7 @@ class ChangeStudentInfo(Resource):
         department_code = args['department_code']
         when_issued = args['when_issued']
         phone = args['phone']
+        print(phone, user_id, email, residence_address, series, number)
 
         user = User.query.filter_by(id=user_id).first()
         if not user:
@@ -69,7 +70,9 @@ class ChangeStudentInfo(Resource):
 
         if email:
             user.email = email
+            print(email)
             db.session.commit()
+            print(user.email, email)
 
         if registration_address:
             user.enrollee.passport.registration_address = registration_address
