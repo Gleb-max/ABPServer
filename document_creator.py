@@ -149,7 +149,9 @@ def create_student_personal_profile(filename, user: User, need_pdf=True):
     par.add_run(get_tabs(line_len, '', '') + '\t' + '\n').underline = True
     par.add_run(get_tabs(line_len, '', '') + '\t' + '\n').underline = True
 
-    if user.enrollee.photo:
+    import os.path
+
+    if user.enrollee.photo and os.path.isfile(user.enrollee.photo):
         img_path = user.enrollee.photo
     else:
         img_path = 'default_photo.jpg'
@@ -211,7 +213,8 @@ def create_student_record_book(filename, users: List[User], need_pdf=True):
         par.add_run(get_tabs(line_len, '', '') + '\n\n').underline = True
         par.add_run(f'Поступил в {user.student.enrollment_date.year} году')
 
-        if user.enrollee.photo:
+        import os.path
+        if user.enrollee.photo and os.path.isfile(user.enrollee.photo):
             img_path = user.enrollee.photo
         else:
             img_path = 'default_photo.jpg'
@@ -282,7 +285,8 @@ def create_student_card(filename, users: List[User], need_pdf=True):
         min_tabble.cell(0, 0).width = Cm(4)
         paragraph = min_tabble.cell(0, 0).paragraphs[0]
         run = paragraph.add_run('\n')
-        if user.enrollee.photo:
+        import os.path
+        if user.enrollee.photo and os.path.isfile(user.enrollee.photo):
             img_path = user.enrollee.photo
         else:
             img_path = 'default_photo.jpg'
@@ -438,7 +442,7 @@ def create_attendance_log(file_name, subject_name, users:List[User], need_pdf=Tr
     table.cell(2, 0).width = Cm(1.2)
 
     table.rows[0].cells[1].merge(table.cell(1, 1))
-    p = table.cell(0, 1).add_paragraph('ФИО инструктируемого')
+    p = table.cell(0, 1).add_paragraph('ФИО обучающегося')
     p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
     table.cell(0, 1).vertical_alignment = WD_ALIGN_VERTICAL.CENTER
 
