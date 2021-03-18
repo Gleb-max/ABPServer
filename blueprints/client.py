@@ -338,13 +338,13 @@ def add_enrollee_data():
         user.enrollee.school_certificate = school_certificate
         db.session.commit()
 
-        if individual_achievements:
-            ach_indexes = json.loads(individual_achievements)['indexes']
-            for i in ach_indexes:
-                ach = IndividualAchievement.query.filter_by(id=i).first()
-                if ach != None:
-                    user.enrollee.individual_achievement_list.append(ach)
-                    db.session.commit()
+        # if individual_achievements:
+        #     ach_indexes = json.loads(individual_achievements)['indexes']
+        #     for i in ach_indexes:
+        #         ach = IndividualAchievement.query.filter_by(id=i).first()
+        #         if ach != None:
+        #             user.enrollee.individual_achievement_list.append(ach)
+        #             db.session.commit()
 
         update_enrollee_state(user.enrollee)
 
