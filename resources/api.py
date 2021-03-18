@@ -112,7 +112,9 @@ class ChangeStudentInfo(Resource):
             db.session.commit()
 
         if department_code:
+            print(department_code)
             user.enrollee.passport.department_code = department_code
+            print(user.enrollee.passport)
             db.session.commit()
 
         if when_issued:

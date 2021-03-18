@@ -24,7 +24,7 @@ parser_student_info.add_argument("registration_address", required=False, type=st
 parser_student_info.add_argument("residence_address", required=False, type=str)
 parser_student_info.add_argument("group_name", required=False, type=str)
 parser_student_info.add_argument("library_card_number", required=False, type=int)
-parser_student_info.add_argument("phone", required=False, type=int)
+parser_student_info.add_argument("phone", required=False, type=str)
 # passport
 parser_student_info.add_argument("series", required=False, type=int)
 parser_student_info.add_argument("number", required=False, type=int)
