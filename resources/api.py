@@ -246,7 +246,7 @@ class InstructTable(Resource):
         users = []
 
         # взять юзеров по имени группы
-        students = Student.query.filter(Student.student_group.name == 'student_group.name').all()
+        students = Student.query.filter(Student.student_group.name == student_group.name).all()
 
         for st in students:
             users.append(st.user)
