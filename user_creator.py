@@ -47,10 +47,9 @@ def fill_user(user_id):
     print(response.text)
 
 
-users_to_fill = [1]
-for i in users_to_fill:
-    fill_user(i)
-
+# users_to_fill = list(range(15, 24)) + [1, 4]
+# for i in users_to_fill:
+#     fill_user(i)
 
 # def register_new_user(name, surname, last_name, is_male, email, password):
 #     if not filling_all(name, surname, last_name, is_male, email, password):

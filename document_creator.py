@@ -374,8 +374,8 @@ def create_instruct_table(filename, users: List[User], subject_name, need_pdf=Fa
 
     table.rows[0].cells[0].merge(table.cell(1, 0))
     table.cell(0, 0).add_paragraph('№\nп/п')
-    table.cell(1, 0).width = Cm(1.2)
-    table.cell(2, 0).width = Cm(1.2)
+    # table.cell(1, 0).width = Cm(1.2)
+    # table.cell(2, 0).width = Cm(1.2)
     table.rows[0].cells[1].merge(table.cell(1, 1))
     p = table.cell(0, 1).add_paragraph('ФИО инструктируемого')
     p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
