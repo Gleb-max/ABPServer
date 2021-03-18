@@ -1,5 +1,6 @@
 import json
 
+import flask
 from flask_admin.contrib.sqla import ModelView
 from sqlalchemy import func, and_, case
 
@@ -134,6 +135,10 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 # register blueprint for mobile and desktop clients
 app.register_blueprint(client.blueprint)
+
+
+# no file cache
+app.get_send_file_max_age = lambda x: 0
 
 # db init
 print('Creating tables...')
