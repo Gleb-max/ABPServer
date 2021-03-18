@@ -1,3 +1,4 @@
+from flask import make_response
 from flask_restful import abort, Resource
 from sqlalchemy import and_
 
@@ -6,8 +7,9 @@ from data.enrollee import Enrollee
 import json
 
 from data.student import Student
+from data.study_direction import StudyDirection
 from data.user import User
-from parsers.receipts import parser_get_enrolles
+from parsers.receipts import parser_get_enrolles, parser_student_info
 
 
 class EnrollsList(Resource):
@@ -36,6 +38,66 @@ class EnrollsList(Resource):
                 answer.append(combined_dict)
 
         return json.dumps({'enrolls': answer})
+
+
+class ChangeStudentInfo(Resource):
+    def post(self):
+        answer = []
+
+        args = parser_student_info.parse_args()
+        user_id = args["user_id"]
+        email = args['email']
+        registration_address = args['registration_address']
+        residence_address = args['residence_address']
+        group_name = args['group_name']
+        library_card_number = args['library_card_number']
+        series = args['series']
+        number = args['number']
+        who_issued = args['who_issued']
+        department_code = args['department_code']
+        when_issued = args['when_issued']
+
+        user = User.query.filter_by(id=user_id).first()
+        if not user:
+            return make_response({'result': 'user not found'}, 404)
+
+        if email:
+            user.email = email
+
+        if registration_address:
+            user.enrollee.passport.registration_address = registration_address
+
+        if residence_address:
+            user.enrollee.passport.residence_address = residence_address
+
+        if group_name:
+            user.stundet.group_name = group_name
+            # TODO
+            similar_student = Student.query.filter_by(group_name=group_name).first()
+            direction = similar_student.user.enrollee.study_direction
+            user.enrollee.study_direction = direction
+
+        if library_card_number:
+            user.stundet.library_card_number = library_card_number
+
+        if series:
+            user.passport.series = series
+
+        if number:
+            user.passport.number = number
+
+        if who_issued:
+            user.passport.who_issued = who_issued
+
+        if department_code:
+            user.passport.department_code = who_issued
+
+        if when_issued:
+            user.passport.when_issued = who_issued
+
+        db.session.commit()
+
+        return make_response({'result': 'success'}, 200)
 
 
 class StudentsList(Resource):
