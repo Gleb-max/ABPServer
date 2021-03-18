@@ -239,6 +239,7 @@ def add_enrollee_data():
 
         print('achieve list:', individual_achievements)
         if individual_achievements:
+            enrollee.individual_achievement_list.clear()
             for achieve in individual_achievements:
                 new_ach = IndividualAchievement()
                 new_ach.name = achieve
