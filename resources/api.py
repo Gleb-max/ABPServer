@@ -68,6 +68,11 @@ class ChangeStudentInfo(Resource):
         if not user:
             return make_response({'result': 'user not found'}, 404)
 
+        print('user enrolle: ', user.enrollee)
+        print('user passpoer', user.enrollee.passport)
+        print('group name', group_name)
+        print('bilet', library_card_number)
+
         if email:
             user.email = email
             print(email)
