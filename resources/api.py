@@ -136,8 +136,15 @@ class StudentsList(Resource):
         print(direction_id)
         if direction_id:
             direction_id = int(direction_id)
-            data = db.session.query(User).join(Student).join(Enrollee).filter(
-                Enrollee.study_direction_id == direction_id).all()
+            direction = StudyDirection.query.filter_by(id=direction_id).first()
+            groups = direction.groups
+            data = []
+            for g in groups:
+                studs = g.studens
+                for s in studs:
+                    data.append(s.user)
+            # data = db.session.query(User).join(Student).join(Enrollee).filter(
+            #     Enrollee.study_direction_id == direction_id).all()
         else:
             data = db.session.query(User).join(Student).join(Enrollee).all()
 
