@@ -237,14 +237,18 @@ class InstructTable(Resource):
         }
 
         student_group = StudentsGroup.query.filter_by(id=group_id).first()
-        print("group id:", group_id, "name:", student_group.name, "group_direction:", student_group.direction.name)
+        print("group id:", group_id, "name:", student_group.name, "group_direction:")
+
         if not student_group:
             return make_response({'result': 'group not found'}, 404)
 
         subject_name = "Физика"
         users = []
 
-        for st in student_group.students:
+        # взять юзеров по имени группы
+        students = Student.query.filter(Student.student_group.name == 'student_group.name').all()
+
+        for st in students:
             users.append(st.user)
             print(st.user.name, st.student_group.direction.name)
 
