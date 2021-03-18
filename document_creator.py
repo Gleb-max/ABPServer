@@ -451,38 +451,38 @@ def create_attendance_log():
     table.rows[0].cells[2].merge(table.cell(1, 17))
     table.cell(0, 2).add_paragraph('Предмет')
 
-    table.rows[0].cells[2].merge(table.cell(0, 3))
-    table.cell(0, 2).add_paragraph('Группа')
-    table.cell(1, 2).add_paragraph('Дата инструктажа')
-    table.cell(1, 3).add_paragraph('Подпись')
+    # table.rows[0].cells[2].merge(table.cell(0, 3))
+    # table.cell(0, 2).add_paragraph('Группа')
+    # table.cell(1, 2).add_paragraph('Дата инструктажа')
+    # table.cell(1, 3).add_paragraph('Подпись')
 
     table.autofit = False
     table.allow_autofit = False
     norm_date = lambda x: x.strftime('%d.%m.%Y')
 
-    for ind, user in enumerate(users, 2):
-        numb_cell = table.cell(ind, 0)
-        numb_cell.width = Cm(1.2)
-        p = numb_cell.add_paragraph(str(ind - 1))
-        p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        numb_cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
-
-        fio_cell = table.cell(ind, 1)
-        fio_cell.width = Inches(2.6)
-        p = fio_cell.add_paragraph(f'{user.name} {user.surname} {user.last_name}')
-        p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        fio_cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
-
-        date_cell = table.cell(ind, 2)
-        date_cell.width = Inches(1.3)
-
-        if user.student:
-            p = date_cell.add_paragraph(f'{norm_date(user.student.enrollment_date)}')
-            p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
-            date_cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
-
-        podp_cell = table.cell(ind, 3)
-        podp_cell.width = Inches(1.3)
+    # for ind, user in enumerate(users, 2):
+    #     numb_cell = table.cell(ind, 0)
+    #     numb_cell.width = Cm(1.2)
+    #     p = numb_cell.add_paragraph(str(ind - 1))
+    #     p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    #     numb_cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
+    #
+    #     fio_cell = table.cell(ind, 1)
+    #     fio_cell.width = Inches(2.6)
+    #     p = fio_cell.add_paragraph(f'{user.name} {user.surname} {user.last_name}')
+    #     p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    #     fio_cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
+    #
+    #     date_cell = table.cell(ind, 2)
+    #     date_cell.width = Inches(1.3)
+    #
+    #     if user.student:
+    #         p = date_cell.add_paragraph(f'{norm_date(user.student.enrollment_date)}')
+    #         p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    #         date_cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
+    #
+    #     podp_cell = table.cell(ind, 3)
+    #     podp_cell.width = Inches(1.3)
 
     par = document.add_paragraph("\n\nИнструктаж провел")
     par.add_run('\t\t\t\t\t\t').underline = True
@@ -500,3 +500,4 @@ def create_attendance_log():
 
     return input_file_path
 
+create_attendance_log()

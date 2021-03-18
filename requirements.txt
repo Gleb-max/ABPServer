@@ -27,4 +27,5 @@ requests
 transliterate
 python-docx
 docx2pdf
-pythoncom
+pywin32
+
