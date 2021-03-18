@@ -134,10 +134,10 @@ class StudentsList(Resource):
 
         args = parser_get_enrolles.parse_args()
         direction_id = args["direction_id"]
-        print(direction_id)
         if direction_id:
             direction_id = int(direction_id)
             direction = StudyDirection.query.filter_by(id=direction_id).first()
+            print('direction_id:', direction.id, 'direction_name', direction.name)
             groups = direction.groups
             data = []
             for g in groups:
