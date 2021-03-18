@@ -9,7 +9,7 @@ from data.faculty import Faculty
 
 class StudyDirection(db.Model, SerializerMixin):
     __tablename__ = "study_direction"
-    serialize_rules = ( '-enrolls', '-groups')
+    serialize_rules = ( '-enrolls', '-groups', '-groups')
 
     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True, unique=True)
 

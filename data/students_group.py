@@ -10,7 +10,7 @@ from .__all_models import student
 
 class StudentsGroup(db.Model, SerializerMixin):
     __tablename__ = "students_group"
-    serialize_rules = ('-user',)  # TODO
+    serialize_rules = ('-user', '-students')  # TODO
 
     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True, unique=True)
 
