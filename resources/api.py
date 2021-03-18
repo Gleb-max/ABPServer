@@ -17,6 +17,7 @@ from parsers.receipts import parser_get_enrolles, parser_student_info, parser_ge
     parser_get_student_card, parser_instruct_table
 from document_creator import *
 
+
 class EnrollsList(Resource):
     def get(self):
         answer = []
@@ -226,9 +227,13 @@ class InstructTable(Resource):
         group_id = args['group_id']
 
         file_name = ''
-
+        print(group_id)
         convert_gleb_to_api = {
-            'ИТ': ''
+            'ИТ': 3,
+            'ЗСИС': 2,
+            'ПМ': 5,
+            'ИИВТ': 1,
+            'АУВТС': 4,
         }
 
         student_group = StudentsGroup.query.filter_by(id=group_id).first()
@@ -236,10 +241,11 @@ class InstructTable(Resource):
         if not student_group:
             return make_response({'result': 'group not found'}, 404)
 
-        subject_name = student_group.direction.name
+        subject_name = "Физика"
         users = []
         for st in student_group.students:
             users.append(st.user)
+            print(st.user.name, st.student_group.direction.name)
 
         file_name = f'instruct_table_{student_group.id}'
 
@@ -271,4 +277,3 @@ class AttendanceTable(Resource):
         file_path = create_attendance_log(path, users, student_group)
 
         return file_path
-
