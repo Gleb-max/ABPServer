@@ -235,10 +235,15 @@ def create_student_record_book(filename, users: List[User], need_pdf=False):
         dean = workers.filter(Dean.post == 'Декан').first()
 
         paragraph = document.add_paragraph()
-        fio = f'{prorector.user.surname} {prorector.user.name[:1]}.{prorector.user.last_name[:1]}.'
+        fio = ' ...'
+        if prorector:
+            fio = f'{prorector.user.surname} {prorector.user.name[:1]}.{prorector.user.last_name[:1]}.'
+
         paragraph.add_run(f'\n\nПроректор по учебной работе {fio}\n\n')
 
-        fio = f'{dean.user.surname} {dean.user.name[:1]}.{dean.user.last_name[:1]}.'
+        fio = ' ...'
+        if prorector:
+            fio = f'{dean.user.surname} {dean.user.name[:1]}.{dean.user.last_name[:1]}.'
         paragraph.add_run(f'Проректор по учебной работе {fio}\n')
 
         if ind % 2 == 0:
@@ -448,24 +453,28 @@ def create_attendance_log():
 
     table.rows[0].cells[1].merge(table.cell(1, 1))
     p = table.cell(0, 1).add_paragraph('ФИО обучающегося \ Месяц, число')
+    table.cell(0, 1).width = Cm(5)
+    table.cell(0, 2).width = Cm(5)
+    p.width = Cm(5)
     p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
     table.cell(0, 1).vertical_alignment = WD_ALIGN_VERTICAL.CENTER
     section = document.sections[-1]
     section.top_margin = Cm(0.7)
-    section.left_margin = Cm(0.5)
-    section.right_margin = Cm(0.5)
+    section.left_margin = Cm(1.2)
+    section.right_margin = Cm(1.2)
 
     table.rows[0].cells[2].merge(table.cell(0, 16))
     table.cell(0, 3).add_paragraph('Предмет')
 
     for i in range(2, 17):
+        table.cell(1, i).add_paragraph(f'{i - 1}.09')
         tc = table.cell(1, i)._tc
         tcPr = tc.get_or_add_tcPr()
         textDirection = OxmlElement('w:textDirection')
         textDirection.set(qn('w:val'), "btLr")  # btLr tbRl
         tcPr.append(textDirection)
 
-        table.cell(1, i).add_paragraph(f'{i-1}.09')
+        table.cell(1, i).height = Cm(2)
         table.cell(1, i).width = Cm(0.7)
 
     # table.rows[0].cells[2].merge(table.cell(0, 3))
