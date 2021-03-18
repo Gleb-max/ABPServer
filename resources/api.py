@@ -246,9 +246,10 @@ class InstructTable(Resource):
         users = []
 
         # взять юзеров по имени группы
-        students = Student.query.filter(Student.student_group.name == student_group.name).all()
+        # students = Student.query.filter(Student.student_group.name == student_group.name).all()
+        student_group = StudentsGroup.filter_by(name=student_group.name).first()
 
-        for st in students:
+        for st in student_group.students:
             users.append(st.user)
             print(st.user.name, st.student_group.direction.name)
 
