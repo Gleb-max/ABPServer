@@ -228,6 +228,7 @@ class InstructTable(Resource):
         file_name = ''
 
         student_group = StudentsGroup.query.filter_by(id=group_id).first()
+        print("group id:", group_id, "name:", student_group.name)
         if not student_group:
             return make_response({'result': 'group not found'}, 404)
 
