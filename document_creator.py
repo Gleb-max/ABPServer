@@ -65,7 +65,7 @@ def format_datetime(date: datetime):
     return ' '
 
 
-def create_student_personal_profile(filename, user: User, need_pdf=True):
+def create_student_personal_profile(filename, user: User, need_pdf=False):
     document = Document()
 
     section = document.sections[0]
@@ -176,7 +176,7 @@ def create_student_personal_profile(filename, user: User, need_pdf=True):
     return input_file_path
 
 
-def create_student_record_book(filename, users: List[User], need_pdf=True):
+def create_student_record_book(filename, users: List[User], need_pdf=False):
     document = Document()
 
     for ind, user in enumerate(users):
@@ -254,7 +254,7 @@ def create_student_record_book(filename, users: List[User], need_pdf=True):
     return input_file_path
 
 
-def create_student_card(filename, users: List[User], need_pdf=True):
+def create_student_card(filename, users: List[User], need_pdf=False):
     document = Document()
 
     for (ind, user) in enumerate(users):
@@ -353,7 +353,7 @@ def create_student_card(filename, users: List[User], need_pdf=True):
     return input_file_path
 
 
-def create_instruct_table(filename, users: List[User], subject_name, need_pdf=True):
+def create_instruct_table(filename, users: List[User], subject_name, need_pdf=False):
     document = Document()
 
     header = document.add_paragraph()

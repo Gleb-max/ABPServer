@@ -160,7 +160,7 @@ class StudentPersonalDossier(Resource):
             return make_response({'result': 'student not found'}, 404)
 
         path = f'media/dossiers/{user.id}_report'
-        file_path = create_student_personal_profile(path, user, need_pdf=True)
+        file_path = create_student_personal_profile(path, user, need_pdf=False)
         print(file_path)
         return file_path
         # return send_from_directory(filename=file_path, directory=os.path.abspath(os.getcwd()),as_attachment=True, cache_timeout=0)
@@ -184,7 +184,7 @@ class StudentRecordBook(Resource):
             file_name = f'direction_{direction_id}'
 
         path = f'media/student_record_books/{file_name}_report'
-        file_path = create_student_record_book(path, users_data, need_pdf=True)
+        file_path = create_student_record_book(path, users_data, need_pdf=False)
         print(file_path)
         return file_path
 
@@ -231,7 +231,7 @@ class InstructTable(Resource):
         file_name = f'instruct_table_{student_group.id}'
 
         path = f'media/instruct_tables/{file_name}_report'
-        file_path = create_instruct_table(path, users, subject_name, need_pdf=True)
+        file_path = create_instruct_table(path, users, subject_name, need_pdf=False)
 
         return file_path
 
