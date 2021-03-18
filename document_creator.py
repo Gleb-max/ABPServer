@@ -1,6 +1,7 @@
 from typing import List
 
 from docx import Document
+from docx.enum.table import WD_ALIGN_VERTICAL
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.section import WD_ORIENT, WD_SECTION
 from docx.shared import Inches, Cm, Pt
@@ -344,18 +345,76 @@ def create_student_card(filename, users: List[User], need_pdf=True):
     return input_file_path
 
 
-def create_instruct_table():
+def create_instruct_table(filename, users: List[User], subject_name, need_pdf=True):
     document = Document()
 
     header = document.add_paragraph()
-    header.add_run(f'Инструктаж по технике безопасности по предмету {"test"}').bold = True
+    header.add_run(f'Инструктаж по технике безопасности по предмету').bold = True
+    header.add_run(f'  {subject_name} ').underline = True
     header.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
-    table = document.add_table(cols=4, rows=9)
-    table.cell(0, 0).add_paragraph('№ п/п')
-    table.cell(0, 1).add_paragraph('ФИО инструктируемого')
+    table = document.add_table(cols=4, rows=len(users) + 2, style='Table Grid')
+
+    table.rows[0].cells[0].merge(table.cell(1, 0))
+    table.cell(0, 0).add_paragraph('№\nп/п')
+    table.cell(1, 0).width = Cm(1.2)
+    table.cell(2, 0).width = Cm(1.2)
+    table.rows[0].cells[1].merge(table.cell(1, 1))
+    p = table.cell(0, 1).add_paragraph('ФИО инструктируемого')
+    p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    table.cell(0, 1).vertical_alignment = WD_ALIGN_VERTICAL.CENTER
+
+    table.rows[0].cells[2].merge(table.cell(0, 3))
     table.cell(0, 2).add_paragraph('Группа')
+    table.cell(1, 2).add_paragraph('Дата инструктажа')
+    table.cell(1, 3).add_paragraph('Подпись')
 
+    table.autofit = False
+    table.allow_autofit = False
+    norm_date = lambda x: x.strftime('%d.%m.%Y')
 
-    upper.add_run(f'{user.student.card_number}').underline = True
-    upper.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.LEFT
+    for ind, user in enumerate(users, 2):
+        numb_cell = table.cell(ind, 0)
+        numb_cell.width = Cm(1.2)
+        p = numb_cell.add_paragraph(str(ind - 1))
+        p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        numb_cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
+
+        fio_cell = table.cell(ind, 1)
+        fio_cell.width = Inches(2.6)
+        p = fio_cell.add_paragraph(f'{user.name} {user.surname} {user.last_name}')
+        p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        fio_cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
+
+        date_cell = table.cell(ind, 2)
+        date_cell.width = Inches(1.3)
+
+        if user.student:
+            p = date_cell.add_paragraph(f'{norm_date(user.student.enrollment_date)}')
+            p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            date_cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
+
+        podp_cell = table.cell(ind, 3)
+        podp_cell.width = Inches(1.3)
+
+    par = document.add_paragraph("\n\nИнструктаж провел")
+    par.add_run('\t\t\t\t\t\t').underline = True
+    par.add_run('\t').underline = False
+    par.add_run('\t\t\t').underline = True
+    par = document.add_paragraph()
+    par.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+    run = par.add_run('Дата, подпись')
+    font = run.font
+    font.size = Pt(8)
+
+    input_file_path = f'{filename}.docx'
+    document.save(input_file_path)
+
+    if need_pdf:
+        out_file_path = f'{filename}.pdf'
+        import pythoncom
+        pythoncom.CoInitializeEx(0)
+        convert_docx2pdf(input_file_path, out_file_path)
+        return out_file_path
+
+    return input_file_path

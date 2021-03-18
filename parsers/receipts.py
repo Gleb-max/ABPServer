@@ -41,3 +41,8 @@ parser_get_student_card = reqparse.RequestParser()
 parser_get_student_card.add_argument("user_id", required=False, type=int)
 parser_get_student_card.add_argument('direction_id', required=False, type=int)
 
+
+parser_instruct_table = reqparse.RequestParser()
+parser_instruct_table.add_argument('group_id', required=True, type=str)
+
+

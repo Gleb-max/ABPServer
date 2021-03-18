@@ -14,7 +14,7 @@ from data.students_group import StudentsGroup
 from data.study_direction import StudyDirection
 from data.user import User
 from parsers.receipts import parser_get_enrolles, parser_student_info, parser_get_student_dossier, \
-    parser_get_student_card
+    parser_get_student_card, parser_instruct_table
 from document_creator import *
 
 class EnrollsList(Resource):
@@ -209,5 +209,29 @@ class StudentCard(Resource):
         path = f'media/student_cards/{file_name}_report'
         file_path = create_student_card(path, users_data, need_pdf=True)
         print(file_path)
+        return file_path
+
+
+class InstructTable(Resource):
+    def get(self):
+        args = parser_instruct_table.parse_args()
+        group_id = args['group_id']
+
+        file_name = ''
+
+        student_group = StudentsGroup.query.filter_by(id=group_id).first()
+        if not student_group:
+            return make_response({'result': 'group not found'}, 404)
+
+        subject_name = student_group.direction.name
+        users = []
+        for st in student_group.students:
+            users.append(st.user)
+
+        file_name = f'instruct_table_{student_group.id}'
+
+        path = f'media/instruct_tables/{file_name}_report'
+        file_path = create_instruct_table(path, users, subject_name, need_pdf=True)
+
         return file_path
 

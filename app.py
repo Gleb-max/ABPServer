@@ -150,6 +150,7 @@ api.add_resource(ChangeStudentInfo, "/api/v2/change_student_info")
 api.add_resource(StudentPersonalDossier, "/api/v2/get_student_dossier")
 api.add_resource(StudentCard, "/api/v2/get_student_cards")
 api.add_resource(StudentRecordBook, "/api/v2/get_record_books")
+api.add_resource(InstructTable, "/api/v2/get_instruct_table")
 
 if __name__ == "__main__":
     # db.drop_all()
@@ -157,14 +158,15 @@ if __name__ == "__main__":
     db.session.commit()
 
     # user = User.query.first()
+    # ans = create_instruct_table('test', User.query.all(), 'name')
+    try:
 
-    # try:
-    #     ans = create_student_card('test1', user)
-    #     ans = create_student_record_book('test2', user)
-    #     ans = create_student_personal_profile('test3', user)
-    #     print(ans)
-    # except Exception as e:
-    #     print(e)
+        # ans = create_student_card('test1', user)
+        # ans = create_student_record_book('test2', user)
+        # ans = create_student_personal_profile('test3', user)
+        print(ans)
+    except Exception as e:
+        print(e)
 
     host = PRODUCTION_HOST if PRODUCTION else LOCAL_HOST
     app.run(host=host, port=PORT, debug=True)
