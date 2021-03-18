@@ -50,6 +50,7 @@ class ChangeStudentInfo(Resource):
         answer = []
 
         args = parser_student_info.parse_args()
+
         user_id = args["user_id"]
         email = args['email']
         registration_address = args['registration_address']
@@ -62,12 +63,12 @@ class ChangeStudentInfo(Resource):
         department_code = args['department_code']
         when_issued = args['when_issued']
         phone = args['phone']
-        print(phone, user_id, email, residence_address, series, number, department_code)
 
         user = User.query.filter_by(id=user_id).first()
         if not user:
             return make_response({'result': 'user not found'}, 404)
 
+        passport = user.enrollee.passport
         print('user enrolle: ', user.enrollee)
         print('user passpoer', user.enrollee.passport)
         print('group name', group_name)
@@ -75,62 +76,65 @@ class ChangeStudentInfo(Resource):
 
         if email:
             user.email = email
-            print(email)
             db.session.commit()
-            print(user.email, email)
 
         if registration_address:
-            user.enrollee.passport.registration_address = registration_address
+            passport.registration_address = registration_address
             db.session.commit()
 
         if residence_address:
-            user.enrollee.passport.residence_address = residence_address
+            passport.residence_address = residence_address
             db.session.commit()
 
+        print(library_card_number)
+        if library_card_number:
+            user.student.library_card_number = library_card_number
+            db.session.commit()
+
+        if phone != None:
+            print(phone)
+            user.enrollee.phone = phone
+            print('user phone:', user.enrollee.phone)
+            db.session.commit()
+
+        if series != None:
+            passport.series = series
+            db.session.commit()
+
+        if number > 0:
+            passport.number = number
+            db.session.commit()
+
+        if who_issued != None:
+            passport.who_issued = who_issued
+            db.session.commit()
+
+        print(department_code)
+        if department_code > 0:
+            print(department_code)
+            passport.department_code = department_code
+            print(user.enrollee.passport)
+            db.session.commit()
+
+        print(when_issued)
+        if when_issued != None:
+            who_issued = datetime.strptime(when_issued, '%Y-%m-%d')
+            passport.when_issued = who_issued
+            db.session.commit()
+
+        db.session.commit()
+
+        print(group_name)
         if group_name:
+            print(group_name)
             students_group = StudentsGroup.query.filter_by(name=group_name).first()
+            print(students_group)
             if not students_group:
                 return make_response({'result': 'student group not found'})
 
             user.student.student_group = students_group
             user.enrollee.study_direction = students_group.direction
             db.session.commit()
-
-        if library_card_number:
-            user.student.library_card_number = library_card_number
-            db.session.commit()
-
-        if phone:
-            print(phone)
-            user.enrollee.phone = phone
-            print('user phone:', user.enrollee.phone)
-            db.session.commit()
-
-        if series:
-            user.enrollee.passport.series = series
-            db.session.commit()
-
-        if number:
-            user.enrollee.passport.number = number
-            db.session.commit()
-
-        if who_issued:
-            user.enrollee.passport.who_issued = who_issued
-            db.session.commit()
-
-        print(department_code)
-        if department_code:
-            print(department_code)
-            user.enrollee.passport.department_code = department_code
-            print(user.enrollee.passport)
-            db.session.commit()
-
-        if when_issued:
-            who_issued = datetime.strptime(when_issued, '%Y-%m-%d')
-            user.enrollee.passport.when_issued = who_issued
-            db.session.commit()
-
-        db.session.commit()
 
         return make_response({'result': 'success'}, 200)
 
