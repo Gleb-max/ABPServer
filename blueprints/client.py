@@ -4,7 +4,7 @@ import json
 from transliterate import slugify
 
 from blueprints.utils import get_abbreviation, enroll_student
-
+from blueprints.utils import send_mail, generate_password
 from data import account_types
 from data.enrollee import Enrollee
 from data.exam_info import ExamInfo
@@ -522,6 +522,25 @@ def enroll_user():
             return make_response(ENROLLEE_NOT_FOUND, 404)
 
     return make_response(FORM_INCORRECT, 400)
+
+
+@blueprint.route("/client/restore/", methods=["POST"])
+def user_restore_password():
+    email = request.form.get("email")
+
+    if not filling_all(email):
+        return make_response(REQUIRED_FIELDS_NOT_FILLING, 400)
+
+    # email as login and not enrollee
+    user = User.query.filter_by(email=email).first()
+    if user:
+        send_mail(email, "Восстановление пароля",
+                  f"Ваш новый пароль:{generate_password(5)}\nИспользуйте его для входа"
+                  )
+
+        return make_response(RESULT_SUCCESS, 200)
+
+    return make_response(USER_NOT_FOUND, 404)
 
 
 @blueprint.errorhandler(404)

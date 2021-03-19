@@ -6,6 +6,9 @@ from data import enrollee_statuses
 from data.db_session import db
 from data.enrollee import Enrollee
 from data.student import Student
+import secrets
+import string
+
 
 
 def get_abbreviation(word_string):
@@ -64,3 +67,7 @@ def enroll_student(enrollee: Enrollee, is_budget=False):
               f'приемная комиссия СГУ им. Ф.Лимонадова'
               )
 
+
+def generate_password(length: int):
+    alphabet = string.ascii_letters + string.digits
+    return ''.join(secrets.choice(alphabet) for _ in range(length))
