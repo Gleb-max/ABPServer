@@ -7,7 +7,7 @@ from data.db_session import db
 
 class Teacher(db.Model, SerializerMixin):
     __tablename__ = "teacher"
-    serialize_rules = ('-directions' ) # TODO
+    serialize_rules = ('-directions', '-subjects')
 
     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True, unique=True)
 

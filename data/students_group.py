@@ -5,11 +5,12 @@ from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy import orm, select, func
 from data.db_session import db
 from data.study_direction import StudyDirection
+from data.subject import Subject
 
 
 class StudentsGroup(db.Model, SerializerMixin):
     __tablename__ = "students_group"
-    serialize_rules = ('-user', '-students')  # TODO
+    serialize_rules = ('-user', '-students')
 
     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True, unique=True)
 
@@ -21,7 +22,7 @@ class StudentsGroup(db.Model, SerializerMixin):
     direction = orm.relationship(StudyDirection, back_populates="groups")
 
     students = orm.relationship("Student", back_populates="student_group")
-    subjects = orm.relationship("Subject", back_populates="students_group")
+    subjects = orm.relationship("Subject", back_populates="students_group", secondary=Subject.sub_association_table)
 
     def __init__(self, name):
         self.name = name
