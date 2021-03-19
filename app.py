@@ -163,9 +163,11 @@ api.add_resource(InstructTable, "/api/v2/get_instruct_table")
 api.add_resource(AttendanceTable, "/api/v2/get_attendance_table")
 
 # db filling if can
-
-fill_teachers()
-fill_subjects()
+try:
+    fill_teachers()
+    fill_subjects()
+except Exception as e:
+    print(e)
 
 if __name__ == "__main__":
     # db.drop_all()
