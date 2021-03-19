@@ -14,7 +14,7 @@ from data.students_group import StudentsGroup
 from data.study_direction import StudyDirection
 from data.user import User
 from parsers.receipts import parser_get_enrolles, parser_student_info, parser_get_student_dossier, \
-    parser_get_student_card, parser_instruct_table
+    parser_get_student_card, parser_instruct_table, parser_student_subjects_info
 from document_creator import *
 
 
@@ -137,8 +137,8 @@ class StudentsList(Resource):
         if direction_id:
             direction_id = int(direction_id)
 
-            if direction_id == 5: # ЗСИС
-                direction_id = 1 # ПМ
+            if direction_id == 5:  # ЗСИС
+                direction_id = 1  # ПМ
             elif direction_id == 1:
                 direction_id = 2
             elif direction_id == 4:
@@ -296,3 +296,22 @@ class AttendanceTable(Resource):
         file_path = create_attendance_log(path, users, student_group)
 
         return file_path
+
+
+class StudentSubjectsInfo(Resource):
+    def get(self):
+        args = parser_student_subjects_info.parse_args()
+        user_id = args['user_id']
+        user = User.query.filter_by(id=user_id).first()
+
+        if not user or not user.student:
+            return make_response({'result': 'user not found'}, 404)
+        student = user.student
+
+        for subject in student.student_group.subjects:
+            item = {}
+            # item['fio'] = subject.
+
+        ans = []
+
+
