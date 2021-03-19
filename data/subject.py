@@ -24,9 +24,10 @@ class Subject(db.Model, SerializerMixin):
     students_group = orm.relationship("StudentsGroup", back_populates="subjects",
                                       secondary=sub_association_table)
 
-    teacher_id = sa.Column(sa.Integer, sa.ForeignKey('teacher.id'))
-    from data.teacher import Teacher
-    teacher = orm.relationship(Teacher, back_populates="subjects")
+    # teacher_id = sa.Column(sa.Integer, sa.ForeignKey('teacher.id'))
+    # from data.teacher import Teacher
+    # teacher = orm.relationship(Teacher, back_populates="subjects")
+    # teacher_pk = sa.Column(sa.Integer, nullable=True)
 
     def __init__(self, name):
         self.name = name

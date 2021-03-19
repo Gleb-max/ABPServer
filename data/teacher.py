@@ -18,7 +18,7 @@ class Teacher(db.Model, SerializerMixin):
     photo = sa.Column(sa.String(200), nullable=True)
 
     # relationships
-    subjects = orm.relationship("Subject", back_populates="teacher")
+    # subjects = orm.relationship("Subject", back_populates="teacher")
 
     def __init__(self, full_name, rank=None, post=None, email=None, photo=None, subjects=[]):
         self.full_name = full_name
