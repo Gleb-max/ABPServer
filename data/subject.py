@@ -22,6 +22,10 @@ class Subject(db.Model, SerializerMixin):
     from data.teacher import Teacher
     teacher = orm.relationship(Teacher, back_populates="subjects")
 
+    def __init__(self, name):
+        self.name = name
+
+
     def __str__(self):
         if self.name:
             return self.name

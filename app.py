@@ -19,6 +19,7 @@ import sys
 
 from data.enrollee import Enrollee
 from data.exam_info import ExamInfo
+from data.generate_subjects_by_direction import fill_teachers, fill_subjects
 from data.student import Student
 from data.study_direction import StudyDirection
 from data.user import User
@@ -161,10 +162,16 @@ api.add_resource(StudentRecordBook, "/api/v2/get_record_books")
 api.add_resource(InstructTable, "/api/v2/get_instruct_table")
 api.add_resource(AttendanceTable, "/api/v2/get_attendance_table")
 
+# db filling if can
+
+fill_teachers()
+fill_subjects()
+
 if __name__ == "__main__":
     # db.drop_all()
     db.create_all()
     db.session.commit()
+    fill_teachers()
 
     # user = User.query.first()
     # ans = create_instruct_table('test', User.query.all(), 'name')

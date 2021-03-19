@@ -5,7 +5,6 @@ from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy import orm, select, func
 from data.db_session import db
 from data.study_direction import StudyDirection
-from .__all_models import student
 
 
 class StudentsGroup(db.Model, SerializerMixin):
