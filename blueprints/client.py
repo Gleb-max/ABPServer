@@ -534,10 +534,34 @@ def user_restore_password():
     # email as login and not enrollee
     user = User.query.filter_by(email=email).first()
     if user:
+        new_pswd = generate_password(5)
         send_mail(email, "Восстановление пароля",
-                  f"Ваш новый пароль:{generate_password(5)}\nИспользуйте его для входа"
+                  f"Ваш новый пароль:{new_pswd}\nИспользуйте его для входа"
                   )
+        user.password = new_pswd
+        db.session.commit()
 
+        return make_response(RESULT_SUCCESS, 200)
+
+    return make_response(USER_NOT_FOUND, 404)
+
+
+@blueprint.route("/client/set_new_password/", methods=["POST"])
+def user_set_new_password():
+    user_id = request.form.get("user_id")
+    pswd = request.form.get("password")
+
+    if not filling_all(user_id, pswd):
+        return make_response(REQUIRED_FIELDS_NOT_FILLING, 400)
+
+    if not user_id.isdigit():
+        return make_response(FORM_INCORRECT, 400)
+
+    # email as login and not enrollee
+    user = User.query.filter_by(id=int(user_id)).first()
+    if user:
+        user.password = pswd
+        db.session.commit()
         return make_response(RESULT_SUCCESS, 200)
 
     return make_response(USER_NOT_FOUND, 404)
