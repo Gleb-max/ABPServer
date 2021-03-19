@@ -6,8 +6,9 @@ dsn = 'postgres://oevaqidctpcmgn:b7b4498465f27c9c4cc3cda45202b0e307de150398e46b3
 try:
     conn = psycopg2.connect(dsn)
     cur = conn.cursor()
-    cur.execute('DROP TABLE "subject" CASCADE')
-    # cur.execute("ALTER TABLE subject DROP COLUMN teacher_id CASCADE")
+    # cur.execute('DROP TABLE "subject" CASCADE')
+    # cur.execute("ALTER TABLE subject ADD COLUMN teacher_id "
+    #             "FOREIGN KEY(fk_columns) REFERENCES parent_table(parent_key_columns) constraint;")
     cur.close()
     conn.commit()
 except (Exception) as error:

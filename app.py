@@ -161,6 +161,7 @@ api.add_resource(StudentCard, "/api/v2/get_student_cards")
 api.add_resource(StudentRecordBook, "/api/v2/get_record_books")
 api.add_resource(InstructTable, "/api/v2/get_instruct_table")
 api.add_resource(AttendanceTable, "/api/v2/get_attendance_table")
+api.add_resource(StudentSubjectsInfo, "/api/v2/get_group_subjects")
 
 # db filling if can
 try:

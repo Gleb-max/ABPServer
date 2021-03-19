@@ -6,6 +6,7 @@ from data import enrollee_statuses
 from data.db_session import db
 from data.enrollee import Enrollee
 from data.student import Student
+from data import account_types
 import secrets
 import string
 
@@ -48,12 +49,13 @@ def enroll_student(enrollee: Enrollee, is_budget=False):
     enrollee.is_budgetary = is_budget
     db.session.commit()
     user = enrollee.user
-
+    user.account_type = account_types.STUDENT
     student = Student()
     db.session.add(student)
     db.session.commit()
 
     student.user = user
+
     db.session.commit()
 
     budget_text = 'бюджет' if is_budget else 'платно'

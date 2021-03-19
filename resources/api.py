@@ -307,11 +307,21 @@ class StudentSubjectsInfo(Resource):
         if not user or not user.student:
             return make_response({'result': 'user not found'}, 404)
         student = user.student
-
+        ans = []
         for subject in student.student_group.subjects:
             item = {}
-            # item['fio'] = subject.
+            teacher = subject.teacher
+            if not teacher:
+                print(subject.name, ' - teacher not found')
+                continue
+            item['fio'] = teacher.full_name
+            item['rank'] = teacher.rank
+            item['post'] = teacher.post
+            item['email'] = teacher.email
+            item['photo'] = teacher.photo
+            item['subject'] = subject.name
+            ans.append(item)
 
-        ans = []
+        return json.dumps({'items': ans})
 
 
